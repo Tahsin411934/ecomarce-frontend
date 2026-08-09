@@ -172,6 +172,11 @@ export default function SearchOverlay({
     inputRef?.current?.focus();
   }, [onQueryChange, inputRef]);
 
+  const handleSelectProduct = (slug: string) => {
+    onClose();
+    router.push(`/product/${slug}`);
+  };
+
   // Reset selection when results change
   useEffect(() => {
     setSelectedIndex(-1);
@@ -239,12 +244,12 @@ export default function SearchOverlay({
             </div>
             <div className="divide-y divide-gray-100">
               {results.slice(0, 8).map((product, index) => (
-                <Link
+                <button
                   key={product.id}
                   id={`search-result-${index}`}
-                  href={`/product/${product.slug}`}
-                  onClick={onClose}
-                  className={`flex items-center gap-3 px-4 py-3 transition-colors ${
+                  type="button"
+                  onClick={() => handleSelectProduct(product.slug)}
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 transition-colors ${
                     index === selectedIndex
                       ? "bg-[#F0FDF4]"
                       : "hover:bg-[#F0FDF4]"
@@ -283,7 +288,7 @@ export default function SearchOverlay({
                       </span>
                     )}
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
             {results.length > 8 && (
