@@ -24,7 +24,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
       className="w-full bg-gradient-to-br from-green-50 via-white to-green-50"
       aria-label="Promotional banners"
     >
-      <div className="mx-auto max-w-[1400px] px-4 ">
+      <div className="mx-auto max-w-[1400px] md:px-4 ">
         <Carousel
           opts={{
             loop: true,
@@ -38,12 +38,12 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
               stopOnMouseEnter: true,
             }),
           ]}
-          className="relative rounded-2xl"
+          className="relative md:rounded-2xl"
         >
           <CarouselContent>
             {banners.map((banner, index) => (
               <CarouselItem key={banner.id}>
-                <div className="relative flex min-h-[320px] items-center overflow-hidden rounded-2xl md:min-h-[500px]">
+                <div className="relative flex min-h-[320px] items-center overflow-hidden md:rounded-2xl md:min-h-[500px]">
                   {/* Full Background Image */}
                   {banner.banner_image && (
                     <Image

@@ -53,8 +53,12 @@ export default function RequestProductModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-        <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" onPointerDown={onClose}>
+        <div
+          className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b px-6 py-4">
             <div className="flex items-center gap-3">

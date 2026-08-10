@@ -89,11 +89,11 @@ export default function SearchOverlay({
     };
   }, [debouncedQuery, categoryId]);
 
-  // Close on click outside
+  // Close on pointer down outside
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleClickOutside = (e: MouseEvent) => {
+    const handlePointerDownOutside = (e: PointerEvent) => {
       if (
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
@@ -102,13 +102,10 @@ export default function SearchOverlay({
       }
     };
 
-    const timer = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 0);
+    document.addEventListener("pointerdown", handlePointerDownOutside);
 
     return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("pointerdown", handlePointerDownOutside);
     };
   }, [isOpen, onClose]);
 
@@ -203,6 +200,7 @@ export default function SearchOverlay({
     <div
       ref={containerRef}
       className="absolute left-0 right-0 top-full z-[100] mx-auto mt-1 w-full"
+      onPointerDownCapture={(e) => e.stopPropagation()}
     >
       {/* Results Panel */}
       <div className="max-h-[420px] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl shadow-black/10">
@@ -249,6 +247,7 @@ export default function SearchOverlay({
                   id={`search-result-${index}`}
                   type="button"
                   onClick={() => handleSelectProduct(product.slug)}
+                  onPointerDown={(e) => e.stopPropagation()}
                   className={`w-full text-left flex items-center gap-3 px-4 py-3 transition-colors ${
                     index === selectedIndex
                       ? "bg-[#F0FDF4]"

@@ -13,5 +13,5 @@ export default async function MainHeaderServer() {
     // API unavailable
   }
 
-  return <MainHeader serverCategories={categories} />;
+  return </>;
 }
