@@ -183,7 +183,13 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
             Out of Stock
           </span>
         )}
-        <div className="mt-4">
+        <div
+          className="mt-4"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
           <QuickAddModal
             product={{
               id: product.id,
