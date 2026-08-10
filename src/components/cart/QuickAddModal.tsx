@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import ProductGalleryModal from "@/components/ui/ProductGalleryModal";
 import { Loader2, Minus, Plus, ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ interface QuickAddModalProps {
 
 export default function QuickAddModal({ product, triggerLabel = "Add to Cart", disabled = false }: QuickAddModalProps) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState<ProductDetailData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -135,6 +137,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
     }
 
     setOpen(false);
+    router.push("/cart");
   };
 
   return (
@@ -150,8 +153,8 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="p-0">
-        <DialogHeader className="flex items-start justify-between gap-4 border-b border-gray-200">
+      <DialogContent className="max-h-[calc(100vh-1.5rem)] w-[calc(100vw-1.5rem)] rounded-2xl p-0 sm:max-h-[calc(100vh-4rem)] sm:w-[min(95vw,70rem)] sm:rounded-[2rem]">
+        <DialogHeader className="flex items-start justify-between gap-4 border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
           <div>
             <DialogTitle>Quick Add To Cart</DialogTitle>
             <p className="text-sm text-gray-500">Review variant options and stock before checkout.</p>
@@ -159,13 +162,13 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
         </DialogHeader>
 
         <DialogClose asChild>
-          <button aria-label="Close" className="absolute right-4 top-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-gray-600 shadow-sm hover:bg-white">
+          <button aria-label="Close" className="absolute right-3 top-3 z-50 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/70 text-gray-600 shadow-sm hover:bg-white sm:right-4 sm:top-4 sm:h-10 sm:w-10">
             <X className="h-4 w-4" />
           </button>
         </DialogClose>
 
-        <div className="grid gap-6 px-6 py-6 md:grid-cols-[360px_minmax(0,1fr)]">
-          <div className="rounded-[1.5rem] border border-gray-200 bg-gray-50 p-4">
+        <div className="grid gap-4 px-4 py-4 sm:gap-6 sm:px-6 sm:py-6 md:grid-cols-[320px_minmax(0,1fr)]">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-3 sm:rounded-[1.5rem] sm:p-4">
             {loading ? (
               <div className="flex h-72 items-center justify-center">
                 <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
@@ -181,7 +184,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
 
                   if (allImages.length > 0) {
                     return (
-                      <div className="w-[360px]">
+                      <div className="mx-auto w-full max-w-[320px] md:mx-0 md:max-w-none md:w-[320px]">
                         <ProductGalleryModal images={allImages} mainHeight="h-72" />
                       </div>
                     );
