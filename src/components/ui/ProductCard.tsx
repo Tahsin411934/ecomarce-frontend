@@ -42,6 +42,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
     dispatch(
       toggleWishlistItem({
         productId: product.id,
+        isWishlisted: wishlisted,
         item: {
           id: product.id,
           name: product.name,

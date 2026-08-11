@@ -34,6 +34,7 @@ import {
 } from "@/lib/features/wishlist/wishlistSlice";
 import { requireAuth } from "@/lib/require-auth";
 import { reviewService } from "@/services/review.service";
+import { toast } from "react-toastify";
 
 interface ProductDetailClientProps {
   product: ProductDetailData;
@@ -56,6 +57,7 @@ export default function ProductDetailClient({
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewBody, setReviewBody] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [updatingWishlist, setUpdatingWishlist] = useState(false);
 
   // Price includes option price adjustment if selected
   const basePrice = selectedVariant?.sale_price ?? product.price_range?.min ?? 0;
@@ -66,13 +68,13 @@ export default function ProductDetailClient({
   const inStock = selectedVariant ? selectedVariant.stock > 0 || selectedVariant.allow_backorder : true;
   const stockCount = selectedVariant?.stock ?? 0;
 
-  const isWishlisted = useAppSelector(
-    selectIsInWishlist(product.id, selectedVariant?.id)
-  );
+  const isWishlisted = useAppSelector(selectIsInWishlist(product.id));
 
   useEffect(() => {
-    dispatch(fetchWishlistItems());
-  }, [dispatch]);
+    if (isAuthenticated) {
+      dispatch(fetchWishlistItems());
+    }
+  }, [dispatch, isAuthenticated]);
 
   // Match variant by size or option Ã¢â‚¬â€ when size changes, update variant and auto-select first available color
   useEffect(() => {
@@ -235,20 +237,28 @@ export default function ProductDetailClient({
 
   const handleToggleWishlist = async () => {
     if (!requireAuth(isAuthenticated)) return;
-    await dispatch(
-      toggleWishlistItem({
-        productId: product.id,
-        item: {
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
-          image: product.main_image,
-          price: currentPrice,
-          variant_id: selectedVariant?.id,
-          variant_name: selectedVariant?.name,
-        },
-      })
-    ).unwrap();
+    if (updatingWishlist) return;
+
+    setUpdatingWishlist(true);
+    try {
+      await dispatch(
+        toggleWishlistItem({
+          productId: product.id,
+          isWishlisted,
+          item: {
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            image: product.main_image,
+            price: currentPrice,
+          },
+        })
+      ).unwrap();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update wishlist. Please try again.");
+    } finally {
+      setUpdatingWishlist(false);
+    }
   };
 
   const handleSubmitReview = async () => {
@@ -347,8 +357,10 @@ export default function ProductDetailClient({
               {/* Wishlist button */}
               <button
                 onClick={handleToggleWishlist}
-                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all"
+                disabled={updatingWishlist}
+                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-all hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
                 aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                aria-busy={updatingWishlist}
               >
                 <Heart
                   className={`h-5 w-5 transition-colors ${

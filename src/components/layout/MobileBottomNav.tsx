@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
 import { selectCartCount } from "@/lib/features/cart/cartSlice";
+import { selectWishlistCount } from "@/lib/features/wishlist/wishlistSlice";
 
 interface NavItem {
   label: string;
@@ -15,6 +16,7 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const primaryColor = "var(--color-primary)";
   const cartCount = useAppSelector(selectCartCount);
+  const wishlistCount = useAppSelector(selectWishlistCount);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -63,9 +65,19 @@ export default function MobileBottomNav() {
       label: "Wishlist",
       href: "/wishlist",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
+        <div className="relative">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          {wishlistCount > 0 && (
+            <span
+              className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+              style={{ backgroundColor: primaryColor }}
+            >
+              {wishlistCount > 99 ? "99+" : wishlistCount}
+            </span>
+          )}
+        </div>
       ),
     },
     {

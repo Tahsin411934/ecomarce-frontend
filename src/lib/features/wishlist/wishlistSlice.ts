@@ -82,16 +82,26 @@ export const toggleWishlistItem = createAsyncThunk(
     payload: {
       productId: number;
       item: WishlistItem;
+      isWishlisted: boolean;
     },
     { rejectWithValue }
   ) => {
     try {
+      if (payload.isWishlisted) {
+        const response = await wishlistService.removeWishlistItem(payload.productId);
+        if (response.status !== "success") {
+          throw new Error(response.message || "Failed to remove wishlist item.");
+        }
+        return { action: "removed" as const, item: payload.item };
+      }
+
       const response = await wishlistService.toggleWishlist(payload.productId);
       if (response.status !== "success") {
-        throw new Error(response.message || "Failed to update wishlist.");
+        throw new Error(response.message || "Failed to add wishlist item.");
       }
+
       return {
-        action: response.action,
+        action: "added" as const,
         item: payload.item,
       };
     } catch (error: any) {
