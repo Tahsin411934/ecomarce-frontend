@@ -29,6 +29,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
   const dispatch = useAppDispatch();
   const wishlisted = useAppSelector(selectIsInWishlist(product.id));
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const displayPrice = product.price;
   const inStock = product.stock_status !== "out_of_stock";
 
@@ -36,7 +37,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
     event.preventDefault();
     event.stopPropagation();
 
-    if (!requireAuth()) return;
+    if (!requireAuth(isAuthenticated)) return;
 
     dispatch(
       toggleWishlistItem({

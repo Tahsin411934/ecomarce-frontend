@@ -107,7 +107,7 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
   }, []);
 
   return (
-    <div className="border-b border-gray-100">
+    <div className="border-b border-gray-100 shadow-xl">
       <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0.5 shrink-0">

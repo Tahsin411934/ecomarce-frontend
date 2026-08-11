@@ -43,6 +43,7 @@ export default function ProductDetailClient({
   product,
 }: ProductDetailClientProps) {
   const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants && product.variants.length > 0 ? product.variants[0] : null,
   );
@@ -233,7 +234,7 @@ export default function ProductDetailClient({
   };
 
   const handleToggleWishlist = async () => {
-    if (!requireAuth()) return;
+    if (!requireAuth(isAuthenticated)) return;
     await dispatch(
       toggleWishlistItem({
         productId: product.id,
@@ -251,7 +252,7 @@ export default function ProductDetailClient({
   };
 
   const handleSubmitReview = async () => {
-    if (!requireAuth()) return;
+    if (!requireAuth(isAuthenticated)) return;
     
     if (!reviewTitle.trim() || !reviewBody.trim()) {
       alert("Please fill in all fields");
