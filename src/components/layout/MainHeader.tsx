@@ -17,6 +17,8 @@ import { setUser, fetchCurrentUser } from "@/lib/features/auth/authSlice";
 import { selectCartCount, toggleCart } from "@/lib/features/cart/cartSlice";
 import { fetchWishlistItems, selectWishlistCount } from "@/lib/features/wishlist/wishlistSlice";
 
+const MOBILE_SEARCH_MEDIA_QUERY = "(max-width: 1023px)";
+
 interface MainHeaderProps {
   serverCategories: Category[];
   serverSettings?: Settings;
@@ -28,6 +30,7 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const desktopInputRef = useRef<HTMLInputElement>(null);
   const mobileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,6 +73,16 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Only the visible search overlay should handle outside clicks and searches.
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_SEARCH_MEDIA_QUERY);
+    const updateViewport = () => setIsMobileViewport(mediaQuery.matches);
+
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
   // Focus mobile search input when search opens on mobile
   useEffect(() => {
     if (searchOpen) {
@@ -87,6 +100,11 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
         slug: name.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-"),
         status: "active" as const,
       }));
+
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }, []);
 
   return (
     <div className="border-b border-gray-100">
@@ -112,6 +130,7 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
               ref={desktopInputRef}
               type="text"
               value={searchQuery}
+              onPointerDown={(e) => e.stopPropagation()}
               onChange={(e) => { setSearchQuery(e.target.value); if (!searchOpen) setSearchOpen(true); }}
               onFocus={() => setSearchOpen(true)}
               placeholder="Search for products..."
@@ -126,8 +145,8 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
             <SearchOverlay
               query={searchQuery}
               onQueryChange={setSearchQuery}
-              onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
-              isOpen={searchOpen}
+              onClose={closeSearch}
+              isOpen={searchOpen && !isMobileViewport}
               inputRef={desktopInputRef}
             />
           </div>
@@ -272,13 +291,14 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
               ref={mobileInputRef}
               type="text"
               value={searchQuery}
+              onPointerDown={(e) => e.stopPropagation()}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for products..."
               className="h-full w-full rounded-lg border border-[#E5E7EB] bg-white pl-4 pr-[60px] text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-300 focus:outline-none"
             />
             <div className="absolute right-0 top-0 flex h-full items-center gap-1.5 pr-2">
               <button
-                onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+                onClick={closeSearch}
                 className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 hover:text-gray-600"
                 aria-label="Close search"
               >
@@ -291,8 +311,8 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
             <SearchOverlay
               query={searchQuery}
               onQueryChange={setSearchQuery}
-              onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
-              isOpen={searchOpen}
+              onClose={closeSearch}
+              isOpen={searchOpen && isMobileViewport}
               inputRef={mobileInputRef}
             />
           </div>

@@ -40,7 +40,7 @@ export default function SearchOverlay({
 
   // Fetch search results when debounced query changes
   useEffect(() => {
-    if (debouncedQuery.length < MIN_QUERY_LENGTH) {
+    if (!isOpen || debouncedQuery.length < MIN_QUERY_LENGTH) {
       setResults([]);
       setError(null);
       return;
@@ -87,27 +87,31 @@ export default function SearchOverlay({
       cancelled = true;
       controller.abort();
     };
-  }, [debouncedQuery, categoryId]);
+  }, [debouncedQuery, categoryId, isOpen]);
 
   // Close on pointer down outside
   useEffect(() => {
     if (!isOpen) return;
 
     const handlePointerDownOutside = (e: PointerEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        onClose();
+      const target = e.target as Node;
+
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return;
       }
+      if (inputRef?.current?.contains(target)) {
+        return;
+      }
+
+      onClose();
     };
 
-    document.addEventListener("pointerdown", handlePointerDownOutside);
+    document.addEventListener("pointerdown", handlePointerDownOutside, true);
 
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDownOutside);
+      document.removeEventListener("pointerdown", handlePointerDownOutside, true);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, inputRef]);
 
   // Keyboard navigation
   useEffect(() => {
