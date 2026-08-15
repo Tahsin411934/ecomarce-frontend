@@ -75,7 +75,7 @@ export async function checkoutApi(data: {
   delivery_phone?: string;
   delivery_notes?: string;
 }): Promise<any> {
-  const res = await fetch(`${API_BASE_URL}/checkout`, {
+  const res = await fetch("/api/checkout", {
     method: "POST",
     credentials: "include",
     headers: {
@@ -91,7 +91,7 @@ export async function checkoutApi(data: {
  * Sync local cart with backend (merge guest cart).
  */
 export async function syncCartApi(items: Array<{ product_id: number; variant_id?: number; quantity: number }>): Promise<CartResponse> {
-  const res = await fetch(`${API_BASE_URL}/carts/sync`, {
+  const res = await fetch("/api/cart/sync", {
     method: "POST",
     credentials: "include",
     headers: {
