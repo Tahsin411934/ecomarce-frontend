@@ -24,4 +24,25 @@ body {
   background: var(--background);  
   color: var(--foreground);  
   font-family: var(--font-inter), sans-serif;  
-} 
+}
+
+/* Use a pointer only for elements that perform an action or navigation. */
+a[href],
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+select:not(:disabled),
+summary,
+label[for],
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="file"]:not(:disabled),
+[data-radix-collection-item]:not([data-disabled]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"],
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
