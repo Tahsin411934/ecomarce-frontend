@@ -1,6 +1,8 @@
 import HeroBannerServer from "@/components/home/HeroBannerServer";
 import CategoryScrollServer from "@/components/home/CategoryScrollServer";
 import HomePageServer from "@/components/home/HomePageServer";
+import CampaignSection from "@/components/home/CampaignSection";
+import { campaignService } from "@/services/campaign.service";
 import type { Metadata } from "next";
 
 // Always fetch fresh data from the backend so homepage updates are reflected immediately.
@@ -18,7 +20,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const campaigns = await campaignService.getActive().catch(() => []);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -65,6 +68,7 @@ export default function Home() {
       <div className="flex flex-col">
         <HeroBannerServer />
         <CategoryScrollServer />
+        <CampaignSection campaigns={campaigns} />
         <HomePageServer />
       </div>
     </>
