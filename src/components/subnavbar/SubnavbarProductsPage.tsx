@@ -132,12 +132,14 @@ export default function SubnavbarProductsPage({
           <div
             className={
               viewMode === "grid"
-                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+                ? "products-carousel"
                 : "flex flex-col gap-3"
             }
           >
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} viewMode={viewMode} />
+              <div key={product.id} className={viewMode === "grid" ? "product-card-item" : ""}>
+                <ProductCard product={product} viewMode={viewMode} />
+              </div>
             ))}
           </div>
         ) : (

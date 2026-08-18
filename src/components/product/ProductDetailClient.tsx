@@ -804,38 +804,39 @@ export default function ProductDetailClient({
               <h2 className="text-xl font-bold text-gray-900 mb-6">
                 Related Products
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="products-carousel">
                 {product.related_products.map((rp) => (
-                  <Link
-                    key={rp.id}
-                    href={`/product/${rp.slug}`}
-                    className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
-                  >
-                    <div className="aspect-square bg-gray-50 relative overflow-hidden">
-                      {rp.main_image ? (
-                        <Image
-                          src={rp.main_image}
-                          alt={rp.name}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-gray-300">
-                          <Package className="h-10 w-10" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
-                        {rp.name}
-                      </h3>
-                      <p className="text-base font-bold text-gray-900 mt-1">
-                        ৳{(rp.price ?? 0).toLocaleString("en-BD")}
-                      </p>
-                    </div>
-                  </Link>
+                  <div key={rp.id} className="product-card-item">
+                    <Link
+                      href={`/product/${rp.slug}`}
+                      className="group block bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+                    >
+                      <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                        {rp.main_image ? (
+                          <Image
+                            src={rp.main_image}
+                            alt={rp.name}
+                            fill
+                            sizes="(max-width: 768px) 50vw, 25vw"
+                            className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-gray-300">
+                            <Package className="h-10 w-10" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
+                          {rp.name}
+                        </h3>
+                        <p className="text-base font-bold text-gray-900 mt-1">
+                          ৳{(rp.price ?? 0).toLocaleString("en-BD")}
+                        </p>
+                      </div>
+                    </Link>
+                  </div>
                 ))}
               </div>
             </div>

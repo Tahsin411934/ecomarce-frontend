@@ -46,3 +46,56 @@ input:disabled,
 select:disabled {
   cursor: not-allowed;
 }
+
+/* ===== Product Grid Carousel Styles ===== */
+/* On small screens, show 2 full cards + 40% of 3rd card with horizontal scroll */
+.products-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 0.75rem; /* 3px gap = 0.75rem */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.products-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.products-carousel .product-card-item {
+  flex: 0 0 calc(50% - 0.375rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* For md and above, switch to grid layout */
+@media (min-width: 768px) {
+  .products-carousel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow-x: visible;
+    gap: 1rem; /* md:gap-4 = 1rem */
+    scroll-behavior: auto;
+  }
+  
+  .products-carousel .product-card-item {
+    flex: auto;
+    scroll-snap-align: none;
+    scroll-snap-stop: unset;
+  }
+}
+
+/* For lg and above, 4 columns */
+@media (min-width: 1024px) {
+  .products-carousel {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* For xl and above, 5 columns */
+@media (min-width: 1280px) {
+  .products-carousel {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

@@ -60,63 +60,67 @@ export default function WishlistPage() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="products-carousel">
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-                <div className="aspect-square animate-pulse bg-gray-100" />
-                <div className="space-y-2 p-3">
-                  <div className="h-4 animate-pulse rounded bg-gray-100" />
-                  <div className="h-4 w-2/3 animate-pulse rounded bg-gray-100" />
+              <div key={index} className="product-card-item">
+                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                  <div className="aspect-square animate-pulse bg-gray-100" />
+                  <div className="space-y-2 p-3">
+                    <div className="h-4 animate-pulse rounded bg-gray-100" />
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-gray-100" />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="products-carousel">
             {items.map((item) => (
-              <article key={item.id} className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-                <div className="relative aspect-square overflow-hidden bg-gray-100">
-                  <Link href={`/product/${item.slug}`} className="block h-full" aria-label={`View ${item.name}`}>
-                    {item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-gray-400">
-                        <ShoppingCart className="h-10 w-10" />
-                      </div>
-                    )}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => dispatch(removeWishlistItem(item.id))}
-                    className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm transition-colors hover:bg-red-50"
-                    aria-label={`Remove ${item.name} from wishlist`}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="p-3">
-                  <Link
-                    href={`/product/${item.slug}`}
-                    className="block truncate text-sm font-semibold text-gray-900 transition-colors group-hover:text-[var(--color-primary)]"
-                  >
-                    {item.name}
-                  </Link>
-                  <p className="mt-1 text-base font-bold text-gray-900">৳{item.price.toLocaleString("en-BD")}</p>
-                  <Link
-                    href={`/product/${item.slug}`}
-                    className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
-                  >
-                    View product
-                  </Link>
-                </div>
-              </article>
+              <div key={item.id} className="product-card-item">
+                <article className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    <Link href={`/product/${item.slug}`} className="block h-full" aria-label={`View ${item.name}`}>
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-gray-400">
+                          <ShoppingCart className="h-10 w-10" />
+                        </div>
+                      )}
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => dispatch(removeWishlistItem(item.id))}
+                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm transition-colors hover:bg-red-50"
+                      aria-label={`Remove ${item.name} from wishlist`}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="p-3">
+                    <Link
+                      href={`/product/${item.slug}`}
+                      className="block truncate text-sm font-semibold text-gray-900 transition-colors group-hover:text-[var(--color-primary)]"
+                    >
+                      {item.name}
+                    </Link>
+                    <p className="mt-1 text-base font-bold text-gray-900">৳{item.price.toLocaleString("en-BD")}</p>
+                    <Link
+                      href={`/product/${item.slug}`}
+                      className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
+                    >
+                      View product
+                    </Link>
+                  </div>
+                </article>
+              </div>
             ))}
           </div>
         )}
