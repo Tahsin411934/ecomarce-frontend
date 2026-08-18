@@ -43,7 +43,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
           <CarouselContent>
             {banners.map((banner, index) => (
               <CarouselItem key={banner.id}>
-                <div className="relative flex min-h-[320px] items-center overflow-hidden md:rounded-2xl md:min-h-[500px]">
+                <div className="relative flex min-h-[250px] items-center overflow-hidden md:rounded-2xl md:min-h-[500px]">
                   {/* Full Background Image */}
                   {banner.banner_image && (
                     <Image
@@ -72,7 +72,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
 
                     {/* Title */}
                     {banner.title && (
-                      <h1 className="max-w-xl text-3xl font-semibold leading-tight text-gray-800 drop-shadow-lg md:text-4xl lg:text-5xl xl:text-[55px] xl:leading-[1.15]">
+                      <h1 className="max-w-xl text-2xl md:text-3xl font-semibold leading-tight text-gray-800 drop-shadow-lg md:text-4xl lg:text-5xl xl:text-[55px] xl:leading-[1.15]">
                         {banner.title.includes("\n")
                           ? banner.title.split("\n").map((line, i) => (
                             <span key={i}>
@@ -97,7 +97,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
 
                     {/* Subtitle */}
                     {banner.subtitle && (
-                      <p className="max-w-lg text-sm leading-relaxed text-gray-600 drop-shadow md:text-base">
+                      <p className="hidden md:flex max-w-lg text-sm leading-relaxed text-gray-600 drop-shadow md:text-base">
                         {banner.subtitle}
                       </p>
                     )}
