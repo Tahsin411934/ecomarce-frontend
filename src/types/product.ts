@@ -111,8 +111,10 @@ export interface VariantOption {
   sku: string | null;
   barcode: string | null;
   image_url: string | null;
+  cost_price: number | null;
   sale_price: number | null;
   compare_at_price: number | null;
+  discount_percent: number;
   price_adjustment?: number;
   stock: number | null;
 }

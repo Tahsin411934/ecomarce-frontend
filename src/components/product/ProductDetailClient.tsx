@@ -129,14 +129,8 @@ export default function ProductDetailClient({
       return { colors, sizes, colorMap };
     }
 
-    const colors = new Set<string>();
     const sizes = new Set<string>();
-    const colorMap: Record<string, string | undefined> = {};
     product.variants?.forEach((v) => {
-      if (v.attributes?.color) {
-        colors.add(v.attributes.color);
-        if (v.attributes?.color_hex) colorMap[v.attributes.color] = v.attributes.color_hex.replace(/^#/, '');
-      }
       // Check attributes.size first, then fallback to variant name
       if (v.attributes?.size) {
         sizes.add(v.attributes.size);
@@ -160,7 +154,7 @@ export default function ProductDetailClient({
       }
     }
     
-    return { colors: Array.from(colors), sizes: Array.from(sizes), colorMap };
+    return { colors: [], sizes: Array.from(sizes), colorMap: {} };
   }, [product.variants, product.attribute_options]);
 
   const handleAddToCart = () => {
@@ -429,6 +423,9 @@ export default function ProductDetailClient({
                              />
                              <span className="text-[10px] font-medium text-gray-600">{opt.color_name}</span>
                              <span className="text-[9px] text-gray-500">৳{(opt.sale_price ?? currentPrice).toLocaleString("en-BD")}</span>
+                             {opt.discount_percent > 0 && (
+                               <span className="text-[9px] font-semibold text-red-500">-{opt.discount_percent}%</span>
+                             )}
                            </button>
                          ))}
                        </div>
