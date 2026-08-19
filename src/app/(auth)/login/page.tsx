@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { loginUser } from "@/app/actions/auth";
 import type { AuthFormState } from "@/lib/features/auth/auth.types";
+import { trackLogin } from "@/lib/gtm";
 
 const initialState: AuthFormState = {
   success: false,
@@ -22,6 +23,8 @@ export default function LoginPage() {
   // Show toast on success/error, then redirect on success
   useEffect(() => {
     if (state.success) {
+      // GTM: Track login
+      trackLogin({ method: "email" });
       toast.success(state.message || "Login successful!");
       setTimeout(() => router.push(redirectTo), 1000);
     } else if (state.message) {

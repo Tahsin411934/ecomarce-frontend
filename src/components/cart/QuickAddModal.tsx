@@ -17,6 +17,7 @@ import {
 import { productDetailService, type ProductDetailData, type ProductVariant } from "@/services/product-detail.service";
 import { useAppDispatch } from "@/lib/hooks";
 import { addToCart, addToCartWithQuantity } from "@/lib/features/cart/cartSlice";
+import { trackAddToCart } from "@/lib/gtm";
 
 interface QuickAddModalProps {
   product: {
@@ -135,6 +136,16 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
     } else {
       dispatch(addToCart(item));
     }
+
+    // GTM: Track add to cart
+    trackAddToCart({
+      productId: product.id,
+      productName: product.name,
+      price,
+      quantity,
+      variant: selectedVariant?.name,
+      imageUrl: imageUrl || undefined,
+    });
 
     setOpen(false);
     router.push("/cart");

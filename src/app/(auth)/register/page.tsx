@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { registerUser } from "@/app/actions/auth";
 import type { AuthFormState } from "@/lib/features/auth/auth.types";
+import { trackSignUp } from "@/lib/gtm";
 
 const initialState: AuthFormState = {
   success: false,
@@ -18,6 +19,8 @@ export default function RegisterPage() {
     if (state.message && !state.success) {
       toast.error(state.message, { toastId: "register-error" });
     } else if (state.success) {
+      // GTM: Track sign up
+      trackSignUp({ method: "email" });
       toast.success(state.message, { toastId: "register-success" });
     }
   }, [state.message, state.success]);

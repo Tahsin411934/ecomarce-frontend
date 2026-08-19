@@ -10,6 +10,7 @@ import {
   removeWishlistItem,
   selectWishlistItems,
 } from "@/lib/features/wishlist/wishlistSlice";
+import { trackRemoveFromWishlist } from "@/lib/gtm";
 
 export default function WishlistPage() {
   const dispatch = useAppDispatch();
@@ -97,7 +98,15 @@ export default function WishlistPage() {
                     </Link>
                     <button
                       type="button"
-                      onClick={() => dispatch(removeWishlistItem(item.id))}
+                      onClick={() => {
+                        dispatch(removeWishlistItem(item.id));
+                        // GTM: Track remove from wishlist
+                        trackRemoveFromWishlist({
+                          productId: item.id,
+                          productName: item.name,
+                          price: item.price,
+                        });
+                      }}
                       className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm transition-colors hover:bg-red-50"
                       aria-label={`Remove ${item.name} from wishlist`}
                     >

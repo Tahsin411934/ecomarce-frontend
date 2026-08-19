@@ -7,6 +7,7 @@ import { ShoppingCart, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectCartItems, selectCartTotal, clearCart } from "@/lib/features/cart/cartSlice";
 import { checkoutApi } from "@/services/cart.service";
+import { trackBeginCheckout, trackPurchase } from "@/lib/gtm";
 
 export default function CheckoutPage() {
   const dispatch = useAppDispatch();
@@ -22,6 +23,9 @@ export default function CheckoutPage() {
   const [deliveryPhone, setDeliveryPhone] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
 
+  const shippingCost = total >= 99 ? 0 : 10;
+  const grandTotal = total + shippingCost;
+
   const handleCheckout = async () => {
     if (!deliveryAddress || !deliveryCity || !deliveryPhone) {
       setError("Please fill in all required delivery details.");
@@ -30,6 +34,18 @@ export default function CheckoutPage() {
 
     setLoading(true);
     setError(null);
+
+    // GTM: Track begin checkout
+    trackBeginCheckout({
+      items: items.map((item) => ({
+        productId: item.id,
+        productName: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        variant: item.variant_name,
+      })),
+      totalValue: total,
+    });
 
     try {
       // First sync the local cart with backend
@@ -65,6 +81,21 @@ export default function CheckoutPage() {
         setSuccess(true);
         setOrderNumber(result.order.order_number);
         dispatch(clearCart());
+
+        // GTM: Track purchase
+        trackPurchase({
+          orderId: result.order.order_number,
+          transactionId: result.order.order_number,
+          items: items.map((item) => ({
+            productId: item.id,
+            productName: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            variant: item.variant_name,
+          })),
+          totalValue: grandTotal,
+          shipping: shippingCost,
+        });
         
         // Redirect to order confirmation after 3 seconds
         setTimeout(() => {
@@ -111,9 +142,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  const shippingCost = total >= 99 ? 0 : 10;
-  const grandTotal = total + shippingCost;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

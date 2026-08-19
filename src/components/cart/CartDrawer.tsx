@@ -8,6 +8,7 @@ import {
   selectCartItems, selectCartCount, selectCartTotal, selectCartOpen,
   removeFromCart, updateQuantity, setCartOpen,
 } from "@/lib/features/cart/cartSlice";
+import { trackRemoveFromCart, trackBeginCheckout } from "@/lib/gtm";
 
 export default function CartDrawer() {
   const dispatch = useAppDispatch();
@@ -73,8 +74,19 @@ export default function CartDrawer() {
                     <p className="text-sm font-semibold text-[var(--color-primary)] mt-1">৳{(item.price * item.quantity).toLocaleString("en-BD")}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <button onClick={() => {
-                        if (item.quantity <= 1) dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }));
-                        else dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, quantity: item.quantity - 1 }));
+                        if (item.quantity <= 1) {
+                          dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }));
+                          // GTM: Track remove from cart
+                          trackRemoveFromCart({
+                            productId: item.id,
+                            productName: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            variant: item.variant_name,
+                          });
+                        } else {
+                          dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, quantity: item.quantity - 1 }));
+                        }
                       }} className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50">
                         <Minus className="h-3 w-3 text-gray-600" />
                       </button>
@@ -84,7 +96,17 @@ export default function CartDrawer() {
                         className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50">
                         <Plus className="h-3 w-3 text-gray-600" />
                       </button>
-                      <button onClick={() => dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }))}
+                      <button onClick={() => {
+                        dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }));
+                        // GTM: Track remove from cart
+                        trackRemoveFromCart({
+                          productId: item.id,
+                          productName: item.name,
+                          price: item.price,
+                          quantity: item.quantity,
+                          variant: item.variant_name,
+                        });
+                      }}
                         className="ml-auto opacity-0 group-hover:opacity-100 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -106,7 +128,20 @@ export default function CartDrawer() {
               className="block w-full text-center py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--color-primary)]">
               View Cart
             </Link>
-            <Link href="/checkout" onClick={() => dispatch(setCartOpen(false))}
+            <Link href="/checkout" onClick={() => {
+              dispatch(setCartOpen(false));
+              // GTM: Track begin checkout
+              trackBeginCheckout({
+                items: items.map((item) => ({
+                  productId: item.id,
+                  productName: item.name,
+                  price: item.price,
+                  quantity: item.quantity,
+                  variant: item.variant_name,
+                })),
+                totalValue: total,
+              });
+            }}
               className="block w-full text-center py-3 border-2 border-[var(--color-primary)] text-[var(--color-primary)] rounded-xl font-semibold text-sm hover:bg-[#F0FDF4]">
               Checkout
             </Link>

@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { toggleWishlistItem, selectIsInWishlist } from "@/lib/features/wishlist/wishlistSlice";
 import { requireAuth } from "@/lib/require-auth";
 import QuickAddModal from "@/components/cart/QuickAddModal";
+import { trackSelectItem, trackAddToWishlist } from "@/lib/gtm";
 
 // Generic product shape that all product types must conform to
 export interface ProductCardItem {
@@ -52,6 +53,25 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
         },
       })
     );
+
+    // GTM: Track wishlist add
+    if (!wishlisted) {
+      trackAddToWishlist({
+        productId: product.id,
+        productName: product.name,
+        price: product.price ?? 0,
+        imageUrl: product.main_image || undefined,
+      });
+    }
+  };
+
+  const handleProductClick = () => {
+    // GTM: Track product click
+    trackSelectItem({
+      productId: product.id,
+      productName: product.name,
+      price: product.price ?? 0,
+    });
   };
 
   if (viewMode === "list") {
@@ -61,6 +81,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
           <Link
             href={`/product/${product.slug}`}
             className="flex shrink-0 items-center"
+            onClick={handleProductClick}
           >
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100">
               {product.main_image ? (
@@ -86,6 +107,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
                 href={`/product/${product.slug}`}
                 className="block"
                 aria-label={`View ${product.name}`}
+                onClick={handleProductClick}
               >
                 <h3 className="text-sm md:text-base font-semibold text-gray-900 group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">
                   {product.name}
@@ -130,6 +152,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
     <Link
       href={`/product/${product.slug}`}
       className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+      onClick={handleProductClick}
     >
       {/* Image */}
       <div className="aspect-square bg-gray-100 relative overflow-hidden">

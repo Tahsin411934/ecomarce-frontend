@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
 import { productService, type Product } from "@/services/product.service";
 import { Search, X, Loader2, ShoppingCart } from "lucide-react";
+import { trackSearch, trackViewSearchResults, trackSelectItem } from "@/lib/gtm";
 
 const DEBOUNCE_DELAY = 350;
 const MIN_QUERY_LENGTH = 2;
@@ -66,6 +67,19 @@ export default function SearchOverlay({
 
         if (res.success) {
           setResults(res.data);
+
+          // GTM: Track search and search results
+          trackSearch({ searchTerm: debouncedQuery });
+          trackViewSearchResults({
+            searchTerm: debouncedQuery,
+            resultsCount: res.data.length,
+            items: res.data.slice(0, 8).map((p) => ({
+              productId: p.id,
+              productName: p.name,
+              price: p.sale_price ?? p.price,
+              category: p.category,
+            })),
+          });
         } else {
           setResults([]);
         }
@@ -174,6 +188,17 @@ export default function SearchOverlay({
   }, [onQueryChange, inputRef]);
 
   const handleSelectProduct = (slug: string) => {
+    const product = results.find((p) => p.slug === slug);
+    if (product) {
+      // GTM: Track product click from search
+      trackSelectItem({
+        productId: product.id,
+        productName: product.name,
+        price: product.sale_price ?? product.price,
+        listName: "search_results",
+        category: product.category,
+      });
+    }
     onClose();
     router.push(`/product/${slug}`);
   };

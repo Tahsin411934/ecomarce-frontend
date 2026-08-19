@@ -22,6 +22,7 @@ import { categoryProductsService } from "@/services/category-products.service";
 import { brandsService, type BrandOption } from "@/services/brands.service";
 import { useAppDispatch } from "@/lib/hooks";
 import { fetchWishlistItems } from "@/lib/features/wishlist/wishlistSlice";
+import { trackViewItemList, trackViewCategory } from "@/lib/gtm";
 import dynamic from "next/dynamic";
 import "./CategoryProductsPage.css";
 
@@ -196,6 +197,33 @@ export default function CategoryProductsPage({
   const displayName = category?.name || categoryName;
   const displayDescription = category?.description || categoryDescription;
   const displayImage = category?.image || categoryImage;
+
+  // GTM: Track category view
+  useEffect(() => {
+    if (category?.id) {
+      trackViewCategory({
+        categoryId: category.id,
+        categoryName: displayName,
+        categorySlug: slug,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category?.id, slug]);
+
+  // GTM: Track product list view
+  useEffect(() => {
+    if (products.length > 0) {
+      trackViewItemList({
+        listName: "category_page",
+        items: products.map((p) => ({
+          productId: p.id,
+          productName: p.name,
+          price: p.price ?? 0,
+        })),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products.length]);
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",

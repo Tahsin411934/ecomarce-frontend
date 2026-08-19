@@ -35,6 +35,11 @@ import {
 import { requireAuth } from "@/lib/require-auth";
 import { reviewService } from "@/services/review.service";
 import { toast } from "react-toastify";
+import {
+  trackViewItem,
+  trackAddToCart,
+  trackAddToWishlist,
+} from "@/lib/gtm";
 
 interface ProductDetailClientProps {
   product: ProductDetailData;
@@ -78,6 +83,19 @@ export default function ProductDetailClient({
       dispatch(fetchWishlistItems());
     }
   }, [dispatch, isAuthenticated]);
+
+  // GTM: Track product view
+  useEffect(() => {
+    trackViewItem({
+      productId: product.id,
+      productName: product.name,
+      price: currentPrice,
+      category: product.categories?.[0]?.name,
+      brand: product.brand?.name,
+      imageUrl: product.main_image || undefined,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id, product.name]);
 
   // Keep the selected color inside the selected parent variant.
   useEffect(() => {
@@ -171,6 +189,18 @@ export default function ProductDetailClient({
         stock: stockCount,
       })
     );
+
+    // GTM: Track add to cart
+    trackAddToCart({
+      productId: product.id,
+      productName: product.name,
+      price: currentPrice,
+      quantity,
+      variant: selectedVariant?.name,
+      category: product.categories?.[0]?.name,
+      brand: product.brand?.name,
+      imageUrl: product.main_image || undefined,
+    });
   };
 
   const handleToggleWishlist = async () => {
@@ -192,6 +222,18 @@ export default function ProductDetailClient({
           },
         })
       ).unwrap();
+
+      // GTM: Track wishlist add/remove
+      if (!isWishlisted) {
+        trackAddToWishlist({
+          productId: product.id,
+          productName: product.name,
+          price: currentPrice,
+          category: product.categories?.[0]?.name,
+          brand: product.brand?.name,
+          imageUrl: product.main_image || undefined,
+        });
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to update wishlist. Please try again.");
     } finally {
