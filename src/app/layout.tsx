@@ -20,6 +20,10 @@ const inter = Inter({
   fallback: ["system-ui", "sans-serif"],
 });
 
+function getGtmScriptContent(code: string): string {
+  return code.match(/<script\b[^>]*>([\s\S]*?)<\/script>/i)?.[1] ?? code;
+}
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -61,15 +65,22 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   let primaryColor = "var(--color-primary)";
+  let gtmHeaderCode: string | null = null;
+  let gtmBodyCode: string | null = null;
   try {
     const settingsRes = await settingsService.getAll();
     if (settingsRes.success && settingsRes.data?.primary_color) {
       primaryColor = settingsRes.data.primary_color;
     }
+    if (settingsRes.success && settingsRes.data?.gtm_enabled === "1") {
+      gtmHeaderCode = settingsRes.data.gtm_header_code;
+      gtmBodyCode = settingsRes.data.gtm_body_code;
+    }
   } catch {}
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
+        {gtmHeaderCode ? <script dangerouslySetInnerHTML={{ __html: getGtmScriptContent(gtmHeaderCode) }} /> : null}
         <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com"} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com"} />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
@@ -77,6 +88,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-white font-sans m-0 p-0"
         style={{ "--color-primary": primaryColor } as React.CSSProperties}>
+        {gtmBodyCode ? <div dangerouslySetInnerHTML={{ __html: gtmBodyCode }} /> : null}
         <StoreProvider>
           <a href="#main-content"
             className="sr-only focus:not-sr-only focus:absolute focus:z-[9999] focus:top-4 focus:left-4 focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
