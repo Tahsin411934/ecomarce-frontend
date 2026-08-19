@@ -48,9 +48,11 @@ export default function ProductDetailClient({
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants && product.variants.length > 0 ? product.variants[0] : null,
   );
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedOption, setSelectedOption] = useState<VariantOption | null>(null);
+  const initialVariant = product.variants?.[0] ?? null;
+  const initialOption = initialVariant?.options?.[0] ?? null;
+  const [selectedColor, setSelectedColor] = useState<string | null>(initialOption?.color_name ?? null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(initialVariant?.attributes?.size ?? initialVariant?.name ?? null);
+  const [selectedOption, setSelectedOption] = useState<VariantOption | null>(initialOption);
   const [quantity, setQuantity] = useState(1);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
@@ -59,14 +61,15 @@ export default function ProductDetailClient({
   const [submittingReview, setSubmittingReview] = useState(false);
   const [updatingWishlist, setUpdatingWishlist] = useState(false);
 
-  // Price includes option price adjustment if selected
+  // The selected color option is the sellable item when a variant has colors.
   const basePrice = selectedVariant?.sale_price ?? product.price_range?.min ?? 0;
-  const optionAdjustment = selectedOption?.price_adjustment ?? 0;
-  const currentPrice = basePrice + optionAdjustment;
-  const comparePrice = selectedVariant?.compare_at_price ?? null;
+  const currentPrice = selectedOption?.sale_price ?? (basePrice + (selectedOption?.price_adjustment ?? 0));
+  const comparePrice = selectedOption?.compare_at_price ?? selectedVariant?.compare_at_price ?? null;
   const hasSale = comparePrice !== null && comparePrice > currentPrice;
-  const inStock = selectedVariant ? selectedVariant.stock > 0 || selectedVariant.allow_backorder : true;
-  const stockCount = selectedVariant?.stock ?? 0;
+  const stockCount = selectedOption?.stock ?? selectedVariant?.stock ?? 0;
+  const inStock = selectedVariant
+    ? (selectedOption ? stockCount > 0 : stockCount > 0) || selectedVariant.allow_backorder
+    : false;
 
   const isWishlisted = useAppSelector(selectIsInWishlist(product.id));
 
@@ -76,76 +79,18 @@ export default function ProductDetailClient({
     }
   }, [dispatch, isAuthenticated]);
 
-  // Match variant by size or option Ã¢â‚¬â€ when size changes, update variant and auto-select first available color
+  // Keep the selected color inside the selected parent variant.
   useEffect(() => {
-    if (!product.variants) return;
-    
-    if (selectedSize) {
-      const match = product.variants.find((v) =>
-        v.attributes?.size === selectedSize || v.name === selectedSize
-      );
-      if (match) {
-        setSelectedVariant(match);
-        // Auto-select first available color from variant options when size changes
-        if (match.options && match.options.length > 0) {
-          const firstAvailableColor = match.options[0];
-          setSelectedOption(firstAvailableColor);
-          // Also update the attribute_options color to match
-          if (firstAvailableColor.color_name) {
-            setSelectedColor(firstAvailableColor.color_name);
-          }
-        } else {
-          setSelectedOption(null);
-        }
-        return;
-      }
-    }
-    
-    // Default to first variant if no size selected
-    const defaultVariant = product.variants[0] ?? null;
-    setSelectedVariant(defaultVariant);
-    // Auto-select first available color from default variant
-    if (defaultVariant?.options && defaultVariant.options.length > 0) {
-      setSelectedOption(defaultVariant.options[0]);
-      if (defaultVariant.options[0].color_name) {
-        setSelectedColor(defaultVariant.options[0].color_name);
-      }
+    const defaultVariant = product.variants?.[0] ?? null;
+    if (!selectedVariant && defaultVariant) {
+      setSelectedVariant(defaultVariant);
+      setSelectedSize(defaultVariant.attributes?.size ?? defaultVariant.name);
+      const firstOption = defaultVariant.options?.[0] ?? null;
+      setSelectedOption(firstOption);
+      setSelectedColor(firstOption?.color_name ?? null);
     }
   }, [selectedSize, product.variants]);
 
-  // Update variant when selectedOption changes (color from variant_options)
-  useEffect(() => {
-    if (!selectedOption || !product.variants) return;
-    
-    // Find the variant that has this option
-    const matchingVariant = product.variants.find(v => 
-      v.options && v.options.some(opt => opt.id === selectedOption.id)
-    );
-    
-    if (matchingVariant && matchingVariant.id !== selectedVariant?.id) {
-      setSelectedVariant(matchingVariant);
-      // Update size if variant has size attribute
-      if (matchingVariant.attributes?.size) {
-        setSelectedSize(matchingVariant.attributes.size);
-      } else if (matchingVariant.name) {
-        setSelectedSize(matchingVariant.name);
-      }
-    }
-  }, [selectedOption, product.variants, selectedVariant?.id]);
-
-  // Handle attribute_options color Ã¢â‚¬â€ updates both selectedColor and selectedOption
-  const handleColorClick = (color: string) => {
-    setSelectedColor(selectedColor === color ? null : color);
-    // Also try to find matching variant option
-    if (selectedVariant?.options) {
-      const matchingOption = selectedVariant.options.find(opt => opt.color_name === color);
-      if (matchingOption) {
-        setSelectedOption(matchingOption);
-      }
-    }
-  };
-
-  // Handle variant option color click Ã¢â‚¬â€ updates variant and size
   const handleVariantOptionClick = (option: VariantOption) => {
     setSelectedOption(option);
     setQuantity(1);
@@ -155,7 +100,6 @@ export default function ProductDetailClient({
     }
   };
 
-  // When selected size changes, get available options for that variant
   const variantOptions = selectedVariant?.options ?? [];
   
   // Keep both selectors always visible
@@ -428,56 +372,32 @@ export default function ProductDetailClient({
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Choose Options</h3>
 
-                  {/* Colors */}
-                  {attributeOptions.colors.length > 0 && (
-                    <div className="mb-3">
-                      <div className="text-sm font-medium text-gray-700">Color</div>
-                      <div className="flex gap-2 mt-2">
-                      {attributeOptions.colors.map((c) => {
-                          const option = product.attribute_options?.colors.find((opt) => opt.value === c);
-                          const hex = attributeOptions.colorMap?.[c];
-                          const hasStock = option ? option.available : false;
-                          return (
-                            <button
-                              key={c}
-                              type="button"
-                              onClick={() => { handleColorClick(c); setQuantity(1); }}
-                              disabled={!hasStock}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all border ${selectedColor === c ? 'ring-2 ring-[var(--color-primary)] border-[var(--color-primary)]' : 'border-gray-200'} ${!hasStock ? 'opacity-40 cursor-not-allowed' : ''}`}
-                            >
-                              <span className="inline-block w-5 h-5 rounded-full" style={{ backgroundColor: hex ? `#${hex}` : undefined, border: hex ? '1px solid rgba(0,0,0,0.05)' : undefined }} />
-                              <span className="text-sm">{c}</span>
-                              {option?.available_count != null ? (
-                                <span className="text-[11px] text-gray-500">({option.available_count})</span>
-                              ) : null}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Sizes - ALWAYS VISIBLE when variants exist */}
                   <div className="mb-3">
                     <div className="text-sm font-medium text-gray-700">Size / Variant</div>
                     <div className="flex gap-2 mt-2">
                       {product.variants.map((v) => {
                         const variantLabel = v.name || `Variant ${v.id}`;
                         const isSelected = selectedSize === variantLabel || selectedVariant?.id === v.id;
+                        const variantHasStock = v.options?.length
+                          ? v.options.some((option) => (option.stock ?? 0) > 0)
+                          : (v.stock ?? 0) > 0;
                         return (
                           <button
                             key={v.id}
                             type="button"
-                            onClick={() => { 
-                              setSelectedSize(variantLabel); 
+                            onClick={() => {
+                              setSelectedVariant(v);
+                              setSelectedSize(v.attributes?.size ?? variantLabel);
+                              setSelectedOption(v.options?.[0] ?? null);
+                              setSelectedColor(v.options?.[0]?.color_name ?? null);
                               setQuantity(1);
                             }}
-                            disabled={v.stock <= 0 && !v.allow_backorder}
-                            className={`px-3 py-2 rounded-lg text-sm border ${isSelected ? 'ring-2 ring-[var(--color-primary)] border-[var(--color-primary)]' : 'border-gray-200'} ${v.stock <= 0 && !v.allow_backorder ? 'opacity-40 cursor-not-allowed' : ''}`}
+                            disabled={!variantHasStock && !v.allow_backorder}
+                            className={`px-3 py-2 rounded-lg text-sm border ${isSelected ? 'ring-2 ring-[var(--color-primary)] border-[var(--color-primary)]' : 'border-gray-200'} ${!variantHasStock && !v.allow_backorder ? 'opacity-40 cursor-not-allowed' : ''}`}
                           >
                             {variantLabel}
-                            {v.stock > 0 && v.stock <= 5 && (
-                              <span className="ml-1 text-[11px] text-orange-500">({v.stock} left)</span>
+                            {variantHasStock && (
+                              <span className="ml-1 text-[11px] text-orange-500">Available</span>
                             )}
                           </button>
                         );
@@ -495,11 +415,12 @@ export default function ProductDetailClient({
                              key={opt.id}
                              type="button"
                              onClick={() => handleVariantOptionClick(opt)}
+                             disabled={(opt.stock ?? 0) <= 0 && !selectedVariant?.allow_backorder}
                              className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${
                                selectedOption?.id === opt.id
                                  ? 'ring-2 ring-[var(--color-primary)] border-[var(--color-primary)]'
                                  : 'border-gray-200 hover:border-gray-300'
-                             }`}
+                             } ${(opt.stock ?? 0) <= 0 && !selectedVariant?.allow_backorder ? 'opacity-40 cursor-not-allowed' : ''}`}
                              title={opt.color_name}
                            >
                              <span
@@ -507,12 +428,7 @@ export default function ProductDetailClient({
                                style={{ backgroundColor: opt.color_code || '#ccc' }}
                              />
                              <span className="text-[10px] font-medium text-gray-600">{opt.color_name}</span>
-                             {opt.price_adjustment > 0 && (
-                               <span className="text-[9px] text-green-600">+Ã Â§Â³{opt.price_adjustment}</span>
-                             )}
-                             {opt.price_adjustment < 0 && (
-                               <span className="text-[9px] text-red-500">-Ã Â§Â³{Math.abs(opt.price_adjustment)}</span>
-                             )}
+                             <span className="text-[9px] text-gray-500">৳{(opt.sale_price ?? currentPrice).toLocaleString("en-BD")}</span>
                            </button>
                          ))}
                        </div>

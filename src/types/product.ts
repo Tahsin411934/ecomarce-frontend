@@ -108,9 +108,13 @@ export interface VariantOption {
   id: number;
   color_name: string;
   color_code: string | null;
+  sku: string | null;
+  barcode: string | null;
   image_url: string | null;
-  price_adjustment: number;
-  stock: number;
+  sale_price: number | null;
+  compare_at_price: number | null;
+  price_adjustment?: number;
+  stock: number | null;
 }
 
 export interface ProductVariant {
@@ -121,7 +125,7 @@ export interface ProductVariant {
   sale_price: number;
   compare_at_price: number | null;
   cost_price: number | null;
-  stock: number;
+  stock: number | null;
   track_inventory: boolean;
   allow_backorder: boolean;
   attributes: Record<string, string> | null;

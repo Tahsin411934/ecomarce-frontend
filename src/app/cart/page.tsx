@@ -51,7 +51,7 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={`${item.id}-${item.variant_id}`} className="bg-white rounded-xl border border-gray-100 p-4 flex gap-4 hover:shadow-sm transition-shadow">
+              <div key={`${item.id}-${item.variant_id}-${item.variant_option_id ?? 'base'}`} className="bg-white rounded-xl border border-gray-100 p-4 flex gap-4 hover:shadow-sm transition-shadow">
                 <div className="w-24 h-24 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
                   {item.image ? (
                     <img src={item.image} alt={item.name} className="w-full h-full object-cover"
@@ -77,19 +77,19 @@ export default function CartPage() {
                   <div className="flex items-center gap-3 mt-3">
                     <div className="flex items-center border border-gray-200 rounded-lg">
                       <button onClick={() => {
-                        if (item.quantity <= 1) dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }));
-                        else dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, quantity: item.quantity - 1 }));
+                        if (item.quantity <= 1) dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id, variant_option_id: item.variant_option_id }));
+                        else dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, variant_option_id: item.variant_option_id, quantity: item.quantity - 1 }));
                       }} className="w-9 h-9 flex items-center justify-center hover:bg-gray-50 rounded-l-lg">
                         <Minus className="h-3.5 w-3.5 text-gray-600" />
                       </button>
                       <span className="w-10 text-center text-sm font-semibold">{item.quantity}</span>
-                      <button onClick={() => dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, quantity: item.quantity + 1 }))}
+                      <button onClick={() => dispatch(updateQuantity({ id: item.id, variant_id: item.variant_id, variant_option_id: item.variant_option_id, quantity: item.quantity + 1 }))}
                         disabled={item.quantity >= item.stock}
                         className="w-9 h-9 flex items-center justify-center hover:bg-gray-50 rounded-r-lg disabled:opacity-50">
                         <Plus className="h-3.5 w-3.5 text-gray-600" />
                       </button>
                     </div>
-                    <button onClick={() => dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id }))}
+                    <button onClick={() => dispatch(removeFromCart({ id: item.id, variant_id: item.variant_id, variant_option_id: item.variant_option_id }))}
                       className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                       <Trash2 className="h-4 w-4" />
                     </button>

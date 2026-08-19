@@ -90,7 +90,7 @@ export async function checkoutApi(data: {
 /**
  * Sync local cart with backend (merge guest cart).
  */
-export async function syncCartApi(items: Array<{ product_id: number; variant_id?: number; quantity: number }>): Promise<CartResponse> {
+export async function syncCartApi(items: Array<{ product_id: number; variant_id?: number; variant_option_id?: number; quantity: number }>): Promise<CartResponse> {
   const res = await fetch("/api/cart/sync", {
     method: "POST",
     credentials: "include",

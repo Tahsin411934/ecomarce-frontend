@@ -14,6 +14,7 @@ interface AddToCartButtonProps {
     price: number;
     stock?: number;
     variant_id?: number;
+    variant_option_id?: number;
     variant_name?: string;
   };
   variant?: "icon" | "default" | "full";
@@ -42,6 +43,7 @@ export default function AddToCartButton({
       image: product.image,
       price: product.price,
       variant_id: product.variant_id,
+      variant_option_id: product.variant_option_id,
       variant_name: product.variant_name,
       stock: product.stock || 99,
     };

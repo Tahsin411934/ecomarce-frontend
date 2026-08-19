@@ -6,6 +6,7 @@ export interface CartItemData {
   image: string | null;
   price: number;
   variant_id?: number;
+  variant_option_id?: number;
   variant_name?: string;
   quantity: number;
   stock: number;
@@ -26,5 +27,6 @@ export interface CartResponse {
 export interface AddToCartPayload {
   product_id: number;
   variant_id?: number;
+  variant_option_id?: number;
   quantity: number;
 }
