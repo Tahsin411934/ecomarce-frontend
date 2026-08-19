@@ -80,7 +80,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
 
   const price = selectedVariant?.sale_price ?? detail?.price_range?.min ?? product.price ?? 0;
   const comparePrice = selectedVariant?.compare_at_price ?? null;
-  const inStock = selectedVariant ? selectedVariant.stock > 0 || selectedVariant.allow_backorder : true;
+  const inStock = selectedVariant ? (selectedVariant.stock ?? 0) > 0 || selectedVariant.allow_backorder : true;
   const stockCount = selectedVariant?.stock ?? 0;
   const imageUrl = selectedVariant?.image ?? detail?.main_image ?? product.main_image;
 
@@ -243,7 +243,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
                             <div className="flex gap-2 mt-2">
                               {colors.map((c) => {
                                 const option = detail?.attribute_options?.colors.find((opt) => opt.value === c);
-                                const hasStock = option ? option.available : detail?.variants.some((v) => v.attributes?.color === c && (v.stock > 0 || v.allow_backorder));
+                                const hasStock = option ? option.available : detail?.variants.some((v) => v.attributes?.color === c && ((v.stock ?? 0) > 0 || v.allow_backorder));
                                 const hex = attributeOptions.colorMap[c];
                                 return (
                                   <button
@@ -278,7 +278,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
                             <div className="flex gap-2 mt-2">
                               {sizes.map((s) => {
                                 const option = detail?.attribute_options?.sizes.find((opt) => opt.value === s);
-                                const hasStock = option ? option.available && (!selectedColor || detail?.variants.some((v) => v.attributes?.size === s && v.attributes?.color === selectedColor && (v.stock > 0 || v.allow_backorder))) : detail?.variants.some((v) => v.attributes?.size === s && (v.stock > 0 || v.allow_backorder) && (selectedColor ? v.attributes?.color === selectedColor : true));
+                                const hasStock = option ? option.available && (!selectedColor || detail?.variants.some((v) => v.attributes?.size === s && v.attributes?.color === selectedColor && ((v.stock ?? 0) > 0 || v.allow_backorder))) : detail?.variants.some((v) => v.attributes?.size === s && ((v.stock ?? 0) > 0 || v.allow_backorder) && (selectedColor ? v.attributes?.color === selectedColor : true));
                                 return (
                                   <button
                                     key={s}
