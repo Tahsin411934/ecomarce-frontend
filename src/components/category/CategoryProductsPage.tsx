@@ -398,11 +398,9 @@ export default function CategoryProductsPage({
         <div className="mx-auto max-w-[1200px] px-4 py-6">
           {/* Products */}
           {products.length > 0 ? (
-            <div className="products-carousel">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
               {products.map((product) => (
-                <div key={product.id} className="product-card-item">
-                  <ProductCard product={product} />
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
