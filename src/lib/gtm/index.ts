@@ -11,6 +11,7 @@ export {
   SELECT_ITEM,
   ADD_TO_CART,
   REMOVE_FROM_CART,
+  VIEW_CART,
   BEGIN_CHECKOUT,
   ADD_SHIPPING_INFO,
   ADD_PAYMENT_INFO,
@@ -33,6 +34,7 @@ export {
   trackViewItemList,
   trackSelectItem,
   trackViewCategory,
+  trackViewCart,
   trackBeginCheckout,
   trackPurchase,
 } from "./ecommerce";
@@ -45,6 +47,7 @@ export type {
   TrackViewItemListParams,
   TrackSelectItemParams,
   TrackViewCategoryParams,
+  TrackViewCartParams,
   TrackBeginCheckoutParams,
   TrackPurchaseParams,
 } from "./ecommerce";

@@ -9,6 +9,7 @@ import {
   SELECT_ITEM,
   ADD_TO_CART,
   REMOVE_FROM_CART,
+  VIEW_CART,
   BEGIN_CHECKOUT,
   PURCHASE,
   ADD_TO_WISHLIST,
@@ -223,6 +224,36 @@ export function trackViewCategory(params: TrackViewCategoryParams): void {
     category_id: String(params.categoryId),
     category_name: params.categoryName,
     category_slug: params.categorySlug,
+  });
+}
+
+export interface TrackViewCartParams {
+  items: Array<{
+    productId: number | string;
+    productName: string;
+    price: number;
+    quantity: number;
+    variant?: string;
+    category?: string;
+  }>;
+  totalValue: number;
+  currency?: string;
+}
+
+export function trackViewCart(params: TrackViewCartParams): void {
+  const items: GtmItem[] = params.items.map((item) => ({
+    item_id: String(item.productId),
+    item_name: item.productName,
+    price: item.price,
+    quantity: item.quantity,
+    ...(item.variant ? { item_variant: item.variant } : {}),
+    ...(item.category ? { item_category: item.category } : {}),
+  }));
+
+  pushEcommerceEvent(VIEW_CART, {
+    currency: params.currency || "BDT",
+    value: params.totalValue,
+    items,
   });
 }
 

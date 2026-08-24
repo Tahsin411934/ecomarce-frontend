@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Minus, Plus, Trash2, ArrowLeft, ArrowRight } from "lucide-react";
@@ -9,6 +9,7 @@ import {
   selectCartItems, selectCartCount, selectCartTotal,
   removeFromCart, updateQuantity, clearCart,
 } from "@/lib/features/cart/cartSlice";
+import { trackViewCart } from "@/lib/gtm";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -17,6 +18,23 @@ export default function CartPage() {
   const count = useAppSelector(selectCartCount);
   const total = useAppSelector(selectCartTotal);
   const [promoCode, setPromoCode] = useState("");
+
+  // GTM: Track view cart
+  useEffect(() => {
+    if (items.length > 0) {
+      trackViewCart({
+        items: items.map((item) => ({
+          productId: item.id,
+          productName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          variant: item.variant_name,
+        })),
+        totalValue: total,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (items.length === 0) {
     return (

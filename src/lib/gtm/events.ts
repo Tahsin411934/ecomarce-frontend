@@ -9,6 +9,7 @@ export const VIEW_ITEM_LIST = "view_item_list";
 export const SELECT_ITEM = "select_item";
 export const ADD_TO_CART = "add_to_cart";
 export const REMOVE_FROM_CART = "remove_from_cart";
+export const VIEW_CART = "view_cart";
 export const BEGIN_CHECKOUT = "begin_checkout";
 export const ADD_SHIPPING_INFO = "add_shipping_info";
 export const ADD_PAYMENT_INFO = "add_payment_info";
