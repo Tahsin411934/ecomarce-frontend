@@ -65,7 +65,7 @@ export default function ProductRequestPage() {
           {/* Header */}
           <div className="text-center mb-10">
             <Link href="/" className="inline-block">
-              <h1 className="text-3xl font-bold text-[var(--color-primary)]">Shopio</h1>
+              <h1 className="text-3xl font-bold text-[var(--color-primary)]">OneHaatbd</h1>
             </Link>
             <h2 className="mt-6 text-3xl font-bold text-gray-900">Request a Product</h2>
             <p className="mt-3 text-base text-gray-500 max-w-md mx-auto">

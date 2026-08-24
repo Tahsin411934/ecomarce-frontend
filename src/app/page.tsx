@@ -9,14 +9,36 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/\/+$/, "");
+const SITE_NAME = "OneHaat.bd";
+const SITE_DESCRIPTION =
+  "OneHaat.bd is Bangladesh's trusted online shopping destination. Discover top-quality products at unbeatable prices with fast, reliable delivery across Bangladesh.";
+
 export const metadata: Metadata = {
-  title: "Shopio - Premium E-Commerce | Your Premium Online Shopping Destination",
-  description:
-    "Shopio is your premium online shopping destination. Discover top-quality products at unbeatable prices with fast, reliable delivery across Bangladesh.",
+  title: `${SITE_NAME} - Premium Online Shopping in Bangladesh | Best Prices & Fast Delivery`,
+  description: SITE_DESCRIPTION,
   openGraph: {
-    title: "Shopio - Premium E-Commerce",
-    description:
-      "Your premium online shopping destination for top-quality products with unbeatable prices and fast delivery.",
+    title: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    images: [
+      {
+        url: `${SITE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
+    description: SITE_DESCRIPTION,
+    images: [`${SITE_URL}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: SITE_URL,
   },
 };
 
@@ -25,15 +47,15 @@ export default async function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Shopio",
-    url: "https://shopio.com",
-    description:
-      "Your premium online shopping destination for top-quality products with unbeatable prices and fast delivery.",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    inLanguage: "en-US",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://shopio.com/search?q={search_term_string}",
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -42,17 +64,16 @@ export default async function Home() {
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Shopio",
-    url: "https://shopio.com",
-    logo: "https://shopio.com/icon-192.png",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/og-image.jpg`,
+    description: SITE_DESCRIPTION,
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "(800) 123-4567",
       contactType: "customer service",
-      availableLanguage: ["English"],
+      availableLanguage: ["English", "Bengali"],
     },
   };
-
   return (
     <>
       <script

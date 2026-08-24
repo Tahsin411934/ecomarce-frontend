@@ -27,7 +27,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.shopio.com",
+        hostname: "**.onehaatbd.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "onehaatbd.com",
         pathname: "/**",
       },
       {

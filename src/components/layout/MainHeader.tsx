@@ -112,11 +112,11 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0.5 shrink-0">
           {serverSettings?.site_logo ? (
-            <img src={`${process.env.BACKEND_API_URL}${serverSettings.site_logo}`} alt={serverSettings.site_name || "Shopio"} className="h-10 w-auto object-contain" />
+            <img src={`${process.env.BACKEND_API_URL}${serverSettings.site_logo}`} alt={serverSettings.site_name || "OneHaatbd"} className="h-10 w-auto object-contain" />
           ) : (
             <>
               <span className="text-[30px] font-bold tracking-tight text-[#111827]">
-                {serverSettings?.site_name || "Shopio"}
+                {serverSettings?.site_name || "OneHaatbd"}
               </span>
               <span className="text-[38px] font-bold text-[var(--color-primary)]">.</span>
             </>

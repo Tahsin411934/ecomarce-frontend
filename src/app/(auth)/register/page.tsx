@@ -30,10 +30,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-[var(--color-primary)]">Shopio</h1>
+            <h1 className="text-3xl font-bold text-[var(--color-primary)]">OneHaatbd</h1>
           </Link>
           <h2 className="mt-4 text-2xl font-semibold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-sm text-gray-600">Join Shopio and start shopping</p>
+          <p className="mt-2 text-sm text-gray-600">Join OneHaatbd and start shopping</p>
         </div>
 
         <form action={formAction} className="mt-8 space-y-5 bg-white p-8 rounded-xl shadow-sm border border-gray-100" noValidate>

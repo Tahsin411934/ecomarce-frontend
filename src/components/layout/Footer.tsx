@@ -115,9 +115,9 @@ export default async function Footer() {
   }
 
   const socialLinks = getSocialLinks(settings);
-  const siteName = settings?.site_name || "Shopio";
+  const siteName = settings?.site_name || "OneHaatbd";
   const phone = settings?.phone || "+880 123-456-7890";
-  const email = settings?.email || "support@shopio.com";
+  const email = settings?.email || "support@onehaatbd.com";
   const address = settings?.address || "123 Commerce Ave, Dhaka, Bangladesh";
 
   return (

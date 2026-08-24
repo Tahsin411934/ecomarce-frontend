@@ -48,7 +48,7 @@ function ProfileContent() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight">
-              Shopio<span className="text-gray-400">.</span>
+              OneHaatbd<span className="text-gray-400">.</span>
             </h1>
           </Link>
         </div>

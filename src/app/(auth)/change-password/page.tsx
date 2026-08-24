@@ -35,7 +35,7 @@ export default function ChangePasswordPage() {
         {/* Header */}
         <div className="text-center">
           <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-[var(--color-primary)]">Shopio</h1>
+            <h1 className="text-3xl font-bold text-[var(--color-primary)]">OneHaatbd</h1>
           </Link>
           <h2 className="mt-4 text-2xl font-semibold text-gray-900">
             Change password

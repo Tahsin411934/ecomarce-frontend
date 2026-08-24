@@ -25,7 +25,7 @@ function getGtmScriptContent(code: string): string {
 }
 
 // Site configuration - override via NEXT_PUBLIC_SITE_URL env if needed
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://shopio.aftsoftandlimited.com").replace(/\/+$/, "");
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/\/+$/, "");
 const SITE_NAME = "OneHaat.bd";
 const SITE_DESCRIPTION =
   "OneHaat.bd is Bangladesh's trusted online shopping destination. Discover top-quality products at unbeatable prices with fast, reliable delivery across Bangladesh.";

@@ -229,9 +229,9 @@ export default function CategoryProductsPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://shopio.com" },
-      { "@type": "ListItem", position: 2, name: "Categories", item: "https://shopio.com/categories" },
-      { "@type": "ListItem", position: 3, name: displayName, item: `https://shopio.com/category/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://onehaatbd.com" },
+      { "@type": "ListItem", position: 2, name: "Categories", item: "https://onehaatbd.com/categories" },
+      { "@type": "ListItem", position: 3, name: displayName, item: `https://onehaatbd.com/category/${slug}` },
     ],
   };
 

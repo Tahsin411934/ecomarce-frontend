@@ -15,12 +15,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const data = await subnavbarService.getProducts(slug, { per_page: 1 });
     return {
-      title: `${data.subnavbar.name} | Shopio`,
-      description: `Browse ${data.subnavbar.name} products at Shopio. Best prices, fast delivery.`,
+      title: `${data.subnavbar.name} | OneHaatbd`,
+      description: `Browse ${data.subnavbar.name} products at OneHaatbd. Best prices, fast delivery.`,
     };
   } catch {
     return {
-      title: "Category | Shopio",
+      title: "Category | OneHaatbd",
       description: "Browse products by category",
     };
   }

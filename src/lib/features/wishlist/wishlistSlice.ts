@@ -26,7 +26,7 @@ const initialState: WishlistState = {
 function loadInitialState(): WishlistState {
   if (typeof window === "undefined") return initialState;
   try {
-    const stored = localStorage.getItem("shopio_wishlist");
+    const stored = localStorage.getItem("OneHaatbd_wishlist");
     if (!stored) return initialState;
 
     const parsed = JSON.parse(stored);
@@ -49,7 +49,7 @@ function loadInitialState(): WishlistState {
 function saveWishlist(items: WishlistItem[]) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem("shopio_wishlist", JSON.stringify({ items, isLoading: false, error: null }));
+    localStorage.setItem("OneHaatbd_wishlist", JSON.stringify({ items, isLoading: false, error: null }));
   } catch {
     // Ignore write failures
   }

@@ -15,11 +15,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const product = await productDetailService.getBySlug(slug);
 
-    const title = product.seo_title || `${product.name} | Shopio`;
+    const title = product.seo_title || `${product.name} | OneHaatbd`;
     const description =
       product.seo_description ||
       product.short_description ||
-      `Buy ${product.name} at Shopio. Best price, fast delivery.`;
+      `Buy ${product.name} at OneHaatbd. Best price, fast delivery.`;
 
     return {
       title,
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: "Product | Shopio",
+      title: "Product | OneHaatbd",
       description: "Product details",
     };
   }

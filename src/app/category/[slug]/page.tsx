@@ -21,21 +21,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
     return {
-      title: `${category.name} | Shopio`,
+      title: `${category.name} | OneHaatbd`,
       description:
         category.description ||
-        `Shop the best ${category.name} products at Shopio. Premium quality, unbeatable prices, fast delivery.`,
+        `Shop the best ${category.name} products at OneHaatbd. Premium quality, unbeatable prices, fast delivery.`,
       openGraph: {
-        title: `${category.name} | Shopio`,
+        title: `${category.name} | OneHaatbd`,
         description:
           category.description ||
-          `Shop the best ${category.name} products at Shopio.`,
+          `Shop the best ${category.name} products at OneHaatbd.`,
         images: category.image ? [{ url: category.image, alt: category.name }] : [],
       },
     };
   } catch {
     return {
-      title: "Category | Shopio",
+      title: "Category | OneHaatbd",
       description: "Browse our product categories.",
     };
   }
