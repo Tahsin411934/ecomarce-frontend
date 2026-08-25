@@ -68,8 +68,32 @@ export default function ProductDetailClient({
 
   // The selected color option is the sellable item when a variant has colors.
   const basePrice = selectedVariant?.sale_price ?? product.price_range?.min ?? 0;
-  const currentPrice = selectedOption?.sale_price ?? (basePrice + (selectedOption?.price_adjustment ?? 0));
-  const comparePrice = selectedOption?.compare_at_price ?? selectedVariant?.compare_at_price ?? null;
+  const optionBase =
+    selectedOption?.regular_price ??
+    selectedOption?.sale_price ??
+    (basePrice + (selectedOption?.price_adjustment ?? 0));
+  const optionDiscount =
+    selectedOption?.discount_price != null
+      ? selectedOption.discount_price
+      : selectedOption && selectedOption.discount_percent > 0
+      ? optionBase * (1 - selectedOption.discount_percent / 100)
+      : null;
+  const currentPrice =
+    selectedOption?.discount_price ??
+    optionDiscount ??
+    selectedOption?.sale_price ??
+    basePrice;
+  const comparePrice =
+    (selectedOption?.compare_at_price && selectedOption.compare_at_price > currentPrice
+      ? selectedOption.compare_at_price
+      : null) ??
+    (selectedVariant?.regular_price && selectedVariant.regular_price > currentPrice
+      ? selectedVariant.regular_price
+      : null) ??
+    (selectedVariant?.compare_at_price && selectedVariant.compare_at_price > currentPrice
+      ? selectedVariant.compare_at_price
+      : null) ??
+    null;
   const hasSale = comparePrice !== null && comparePrice > currentPrice;
   const stockCount = selectedOption?.stock ?? selectedVariant?.stock ?? 0;
   const inStock = selectedVariant

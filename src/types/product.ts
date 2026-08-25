@@ -113,6 +113,8 @@ export interface VariantOption {
   image_url: string | null;
   cost_price: number | null;
   sale_price: number | null;
+  regular_price?: number | null;
+  discount_price?: number | null;
   compare_at_price: number | null;
   discount_percent: number;
   price_adjustment?: number;
@@ -125,6 +127,9 @@ export interface ProductVariant {
   sku: string;
   barcode: string | null;
   sale_price: number;
+  regular_price?: number | null;
+  discount_price?: number | null;
+  discount_percent?: number;
   compare_at_price: number | null;
   cost_price: number | null;
   stock: number | null;
