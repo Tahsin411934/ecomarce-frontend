@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { REVALIDATE } from "@/config/revalidate";
 import type { CategorySortOption, CategoryProductsRawResponse, CategoryProductsData } from "@/types/product";
 import { SORT_OPTIONS } from "@/types/product";
 
@@ -36,7 +37,9 @@ export const categoryProductsService = {
     const endpoint = `/categories/${slug}/products${qs ? `?${qs}` : ""}`;
 
     const res = await api<CategoryProductsRawResponse>(endpoint, {
-      revalidate: params?.refresh ? 0 : 0,
+      // refresh = 1 (client-side filter/sort) always hits the API fresh;
+      // initial server render uses the central category revalidate window.
+      revalidate: params?.refresh ? 0 : REVALIDATE.CATEGORY,
       tags: [`category-products-${slug}`],
     });
 

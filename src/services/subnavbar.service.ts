@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { REVALIDATE } from "@/config/revalidate";
 import { SORT_OPTIONS } from "@/types/product";
 import type { SubnavbarProductsResponse, SubnavbarProductsData, SubnavbarProduct, SubnavbarSortOption } from "@/types/subnavbar";
 
@@ -26,7 +27,7 @@ export const subnavbarService = {
     const endpoint = `/subnavbar/${slug}/products${qs ? `?${qs}` : ""}`;
 
     const res = await api<SubnavbarProductsResponse>(endpoint, {
-      revalidate: 120,
+      revalidate: REVALIDATE.SUBNAVBAR,
       tags: [`subnavbar-products-${slug}`],
     });
 

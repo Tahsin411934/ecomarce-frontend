@@ -3,11 +3,11 @@ import CategoryScrollServer from "@/components/home/CategoryScrollServer";
 import HomePageServer from "@/components/home/HomePageServer";
 import CampaignSection from "@/components/home/CampaignSection";
 import { campaignService } from "@/services/campaign.service";
+import { REVALIDATE } from "@/config/revalidate";
 import type { Metadata } from "next";
 
-// Always fetch fresh data from the backend so homepage updates are reflected immediately.
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Homepage freshness is controlled centrally in src/config/revalidate.ts.
+export const revalidate = REVALIDATE.HOME_PAGE;
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/\/+$/, "");
 const SITE_NAME = "OneHaat.bd";

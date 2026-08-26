@@ -1,9 +1,10 @@
 import { productDetailService } from "@/services/product-detail.service";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
+import { REVALIDATE } from "@/config/revalidate";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = REVALIDATE.PRODUCT;
 
 interface Props {
   params: Promise<{ slug: string }>;

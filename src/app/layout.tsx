@@ -10,7 +10,6 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import ToastProvider from "@/components/ui/ToastProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
 import FloatingCartButton from "@/components/cart/FloatingCartButton";
-export const dynamic = "force-dynamic";
 
 const inter = Inter({
   subsets: ["latin"],

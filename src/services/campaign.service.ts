@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { REVALIDATE } from "@/config/revalidate";
 
 export type CampaignProduct = {
   id: number;
@@ -29,5 +30,8 @@ export type Campaign = {
 
 export const campaignService = {
   getActive: async (): Promise<Campaign[]> =>
-    (await api<{ data: Campaign[] }>("/campaigns", { revalidate: 0, cache: "no-store" })).data ?? [],
+    (await api<{ data: Campaign[] }>("/campaigns", {
+      revalidate: REVALIDATE.CAMPAIGN,
+      tags: ["campaigns"],
+    })).data ?? [],
 };

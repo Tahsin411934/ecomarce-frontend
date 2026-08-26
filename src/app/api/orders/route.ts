@@ -1,5 +1,5 @@
-import { proxyOrderRequest } from "@/lib/order-proxy";
+import { proxyApiRequest } from "@/lib/proxy";
 
 export async function GET() {
-  return proxyOrderRequest("/api/v1/orders");
+  return proxyApiRequest("/api/v1/orders");
 }

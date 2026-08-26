@@ -1,5 +1,5 @@
-import { proxyCartRequest } from "@/lib/cart-proxy";
+import { proxyApiRequest } from "@/lib/proxy";
 
 export async function POST(request: Request) {
-  return proxyCartRequest(request, "/api/v1/checkout");
+  return proxyApiRequest("/api/v1/checkout", request);
 }

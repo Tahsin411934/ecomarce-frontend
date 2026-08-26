@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { buildApiUrl } from "@/lib/api-url";
+import { REVALIDATE } from "@/config/revalidate";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
 import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
 
-export const dynamic = "force-dynamic";
+export const revalidate = REVALIDATE.CAMPAIGN;
 
 function displayPrice(p: CampaignProduct): number {
   const final = typeof p.price === "number" && isFinite(p.price) && p.price > 0 ? p.price : null;
@@ -28,7 +29,9 @@ function discountOf(p: CampaignProduct): number {
 
 export default async function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const response = await fetch(buildApiUrl(`/campaigns/${slug}`), { cache: "no-store" });
+  const response = await fetch(buildApiUrl(`/campaigns/${slug}`), {
+    next: { revalidate: REVALIDATE.CAMPAIGN, tags: [`campaign-${slug}`] },
+  });
 
   if (!response.ok) {
     return (

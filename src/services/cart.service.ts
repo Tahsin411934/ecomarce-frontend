@@ -1,67 +1,8 @@
-import type { CartResponse, AddToCartPayload } from "@/types/cart";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com/api/v1";
+import type { CartResponse } from "@/types/cart";
 
 /**
- * Get current user's cart.
- */
-export async function getCart(): Promise<CartResponse> {
-  const res = await fetch(`${API_BASE_URL}/my-cart`, {
-    credentials: "include",
-    headers: { Accept: "application/json" },
-  });
-  return res.json();
-}
-
-/**
- * Add item to cart.
- */
-export async function addToCartApi(payload: AddToCartPayload): Promise<CartResponse> {
-  const res = await fetch(`${API_BASE_URL}/cart/add-item`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-  return res.json();
-}
-
-/**
- * Update cart item quantity.
- */
-export async function updateCartItemApi(
-  itemId: number,
-  quantity: number
-): Promise<CartResponse> {
-  const res = await fetch(`${API_BASE_URL}/cart/update-item/${itemId}`, {
-    method: "PUT",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ quantity }),
-  });
-  return res.json();
-}
-
-/**
- * Remove item from cart.
- */
-export async function removeCartItemApi(itemId: number): Promise<CartResponse> {
-  const res = await fetch(`${API_BASE_URL}/cart/remove-item/${itemId}`, {
-    method: "DELETE",
-    credentials: "include",
-    headers: { Accept: "application/json" },
-  });
-  return res.json();
-}
-
-/**
- * Place order (checkout).
+ * Place order (checkout) via the internal proxy, which forwards the
+ * user's token server-side (see src/lib/proxy.ts).
  */
 export async function checkoutApi(data: {
   cart_id: number;
@@ -88,7 +29,7 @@ export async function checkoutApi(data: {
 }
 
 /**
- * Sync local cart with backend (merge guest cart).
+ * Sync local cart with backend (merge guest cart) via the internal proxy.
  */
 export async function syncCartApi(items: Array<{ product_id: number; variant_id?: number; variant_option_id?: number; quantity: number }>): Promise<CartResponse> {
   const res = await fetch("/api/cart/sync", {

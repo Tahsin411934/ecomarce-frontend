@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { REVALIDATE } from "@/config/revalidate";
 import type { HomeApiResponse, HomeSection, CategorySection, CtaSection } from "@/types/home";
 import type { ProductListItem } from "@/types/product";
 
@@ -14,23 +15,11 @@ export const homeService = {
     if (params?.limit_categories) query.set("limit_categories", String(params.limit_categories));
     if (params?.limit_products) query.set("limit_products", String(params.limit_products));
     const qs = query.toString();
-    console.log("homeService.getHomePageData: query", qs);
     const endpoint = `/home/products-by-category${qs ? `?${qs}` : ""}`;
-    const res = await api<HomeApiResponse>(
-      endpoint,
-      {
-        revalidate: 0,
-        cache: "no-store",
-        tags: ["home-page"],
-      }
-    );
-
-    try {
-      console.log("homeService.getHomePageData: response sample", JSON.stringify(res.data?.slice?.(0,1), null, 2));
-    } catch (e) {
-      // ignore logging failures
-    }
-
+    const res = await api<HomeApiResponse>(endpoint, {
+      revalidate: REVALIDATE.HOME_PAGE,
+      tags: ["home-page"],
+    });
     return res.data;
   },
 };

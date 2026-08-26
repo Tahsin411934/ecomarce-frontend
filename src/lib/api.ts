@@ -18,7 +18,6 @@ export async function api<T>(
   };
 
   const shouldBypassCache = revalidate === 0 || fetchOptions.cache === "no-store";
-// console.log("api called with endpoint:", buildApiUrl(endpoint));
   const response = await fetch(buildApiUrl(endpoint), {
     ...fetchOptions,
     credentials: "include",

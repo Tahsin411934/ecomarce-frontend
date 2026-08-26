@@ -1,4 +1,4 @@
-import { proxyWishlistRequest } from "@/lib/wishlist-proxy";
+import { proxyApiRequest } from "@/lib/proxy";
 
 interface RouteContext {
   params: Promise<{ productId: string }>;
@@ -6,5 +6,5 @@ interface RouteContext {
 
 export async function DELETE(request: Request, { params }: RouteContext) {
   const { productId } = await params;
-  return proxyWishlistRequest(request, `/wishlists/${encodeURIComponent(productId)}`);
+  return proxyApiRequest(`/wishlists/${encodeURIComponent(productId)}`, request);
 }

@@ -1,5 +1,5 @@
-import { proxyWishlistRequest } from "@/lib/wishlist-proxy";
+import { proxyApiRequest } from "@/lib/proxy";
 
 export async function POST(request: Request) {
-  return proxyWishlistRequest(request, "/wishlists/toggle");
+  return proxyApiRequest("/wishlists/toggle", request);
 }
