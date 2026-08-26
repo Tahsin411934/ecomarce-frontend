@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buildApiUrl } from "@/lib/api-url";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
+import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,16 @@ export default async function CampaignPage({ params }: { params: Promise<{ slug:
                     </span>
                   )}
                 </div>
+                <QuickAddCardButton
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    main_image: product.main_image ?? null,
+                    price,
+                  }}
+                  className="mt-2"
+                />
               </Link>
             </div>
           );

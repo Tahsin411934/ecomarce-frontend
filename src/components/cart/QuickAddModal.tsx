@@ -155,10 +155,13 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="secondary"
           size="sm"
-          className="w-full"
+          className="w-full bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)] shadow-sm"
           disabled={disabled}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           {triggerLabel}
         </Button>

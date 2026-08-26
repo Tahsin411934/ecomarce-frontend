@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
+import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
 
 /** Never show a broken "৳0" price — if the computed (discounted) price is invalid
  *  fall back to the regular price. */
@@ -93,14 +94,26 @@ export default function CampaignSection({ campaigns }: { campaigns: Campaign[] }
                         <p className="mt-2 line-clamp-1 text-sm font-medium text-gray-900">
                           {product.name}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-orange-600">
-                          ৳{price.toLocaleString("en-BD")}
+                        <p className="mt-1 flex items-center gap-2">
+                          <span className="text-sm font-bold text-orange-600">
+                            ৳{price.toLocaleString("en-BD")}
+                          </span>
+                          {showRegular && (
+                            <span className="text-xs text-gray-400 line-through">
+                              ৳{regular.toLocaleString("en-BD")}
+                            </span>
+                          )}
                         </p>
-                        {showRegular && (
-                          <p className="text-xs text-gray-400 line-through">
-                            ৳{regular.toLocaleString("en-BD")}
-                          </p>
-                        )}
+                        <QuickAddCardButton
+                          product={{
+                            id: product.id,
+                            name: product.name,
+                            slug: product.slug,
+                            main_image: product.main_image ?? null,
+                            price,
+                          }}
+                          className="mt-2"
+                        />
                       </Link>
                     </div>
                   );
