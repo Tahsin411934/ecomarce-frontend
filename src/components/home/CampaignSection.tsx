@@ -98,7 +98,7 @@ export default function CampaignSection({ campaigns }: { campaigns: Campaign[] }
                     return (
                       <CarouselItem
                         key={product.id}
-                        className="min-w-0 basis-[80%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                        className="min-w-0 basis-[43.5%] lg:basis-[18.9%]"
                       >
                         <Link
                           href={`/product/${product.slug}`}
