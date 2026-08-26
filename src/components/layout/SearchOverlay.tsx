@@ -76,7 +76,7 @@ export default function SearchOverlay({
             items: res.data.slice(0, 8).map((p) => ({
               productId: p.id,
               productName: p.name,
-              price: p.sale_price ?? p.price,
+              price: p.price ?? 0,
               category: p.category,
             })),
           });
@@ -194,7 +194,7 @@ export default function SearchOverlay({
       trackSelectItem({
         productId: product.id,
         productName: product.name,
-        price: product.sale_price ?? product.price,
+        price: product.price ?? 0,
         listName: "search_results",
         category: product.category,
       });
@@ -308,13 +308,22 @@ export default function SearchOverlay({
                   </div>
                   <div className="shrink-0 text-right">
                     <span className="text-sm font-semibold text-gray-900">
-                      ৳{product.sale_price ?? product.price}
+                      ৳{(product.price ?? 0).toLocaleString("en-BD")}
                     </span>
-                    {product.sale_price && (
+                    {product.regular_price != null && product.price != null && product.regular_price > product.price && (
                       <span className="ml-1.5 text-xs text-gray-400 line-through">
-                        ৳{product.price}
+                        ৳{product.regular_price.toLocaleString("en-BD")}
                       </span>
                     )}
+                    {product.has_discount !== false &&
+                      product.regular_price != null &&
+                      product.price != null &&
+                      product.regular_price > product.price && (
+                        <span className="ml-1 text-[10px] font-bold text-red-500">
+                          -{product.discount_percent ??
+                            Math.round(((product.regular_price - product.price) / product.regular_price) * 100)}%
+                        </span>
+                      )}
                   </div>
                 </button>
               ))}

@@ -17,7 +17,16 @@ export interface ProductCardItem {
   slug: string;
   short_description?: string | null;
   main_image: string | null;
+  /** Price after discount (what the customer pays). */
   price: number | null;
+  /** Regular (pre-discount) price - shown struck-through when greater than price. */
+  regular_price?: number | null;
+  /** Effective discount percentage. */
+  discount_percent?: number;
+  /** Absolute discount amount = regular_price - price. */
+  discount_amount?: number;
+  /** Whether the product currently has a discount. */
+  has_discount?: boolean;
   product_type?: string;
   stock_status?: string;
 }
@@ -33,6 +42,24 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const displayPrice = product.price;
   const inStock = product.stock_status !== "out_of_stock";
+
+  // Discount display helpers
+  const hasDiscount =
+    product.has_discount ??
+    (product.price != null &&
+      product.regular_price != null &&
+      product.regular_price > product.price);
+  const discountPercent =
+    hasDiscount && product.regular_price && product.regular_price > 0
+      ? (product.discount_percent ??
+        Math.round(
+          ((product.regular_price - (product.price ?? product.regular_price)) /
+            product.regular_price) *
+            100
+        ))
+      : 0;
+  const regularPrice =
+    hasDiscount && product.regular_price != null ? product.regular_price : null;
 
   const handleToggleWishlist = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -119,10 +146,20 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
                 )}
               </Link>
 
-              <div className="flex items-center gap-3 mt-2">
-                <span className="text-lg font-bold text-gray-900">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="text-lg font-bold text-[var(--color-primary)]">
                   ৳{displayPrice?.toLocaleString("en-BD")}
                 </span>
+                {regularPrice != null && (
+                  <span className="text-sm text-gray-400 line-through">
+                    ৳{regularPrice.toLocaleString("en-BD")}
+                  </span>
+                )}
+                {discountPercent > 0 && (
+                  <span className="text-xs font-bold text-red-500">
+                    -{discountPercent}%
+                  </span>
+                )}
               </div>
               {!inStock && (
                 <span className="mt-1 text-xs font-medium text-red-500">Out of Stock</span>
@@ -184,6 +221,13 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
             className={`h-4 w-4 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-gray-600"}`}
           />
         </button>
+
+        {/* Discount Badge */}
+        {discountPercent > 0 && (
+          <span className="absolute top-2 left-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[11px] font-bold text-white shadow-sm">
+            -{discountPercent}%
+          </span>
+        )}
       </div>
 
       {/* Info */}
@@ -197,9 +241,14 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
           </p>
         )}
         <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-gray-900">
+          <span className="text-base font-bold text-[var(--color-primary)]">
             ৳{displayPrice?.toLocaleString("en-BD")}
           </span>
+          {regularPrice != null && (
+            <span className="text-xs text-gray-400 line-through">
+              ৳{regularPrice.toLocaleString("en-BD")}
+            </span>
+          )}
         </div>
         {!inStock && (
           <span className="mt-1 inline-block text-xs font-medium text-red-500">

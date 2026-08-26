@@ -11,7 +11,16 @@ export interface ProductListItem {
   slug: string;
   short_description: string | null;
   main_image: string | null;
+  /** Price after discount (what the customer pays). */
   price: number | null;
+  /** Regular (pre-discount) price - used for strikethrough display. */
+  regular_price?: number | null;
+  /** Effective discount percentage. */
+  discount_percent?: number;
+  /** Absolute discount amount = regular_price - price. */
+  discount_amount?: number;
+  /** Whether the product currently has a discount. */
+  has_discount?: boolean;
   product_type: string;
   stock_status?: string;
   rating?: number;
@@ -117,6 +126,7 @@ export interface VariantOption {
   discount_price?: number | null;
   compare_at_price: number | null;
   discount_percent: number;
+  has_discount?: boolean;
   price_adjustment?: number;
   stock: number | null;
 }
@@ -130,6 +140,7 @@ export interface ProductVariant {
   regular_price?: number | null;
   discount_price?: number | null;
   discount_percent?: number;
+  has_discount?: boolean;
   compare_at_price: number | null;
   cost_price: number | null;
   stock: number | null;
@@ -163,8 +174,12 @@ export interface ProductSearchResult {
   id: number;
   name: string;
   slug: string;
-  price: number;
+  /** Price after discount. */
+  price: number | null;
   sale_price?: number;
+  regular_price?: number | null;
+  discount_percent?: number;
+  has_discount?: boolean;
   thumbnail?: string;
   category?: string;
   stock_status?: string;

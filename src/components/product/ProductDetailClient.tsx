@@ -67,7 +67,11 @@ export default function ProductDetailClient({
   const [updatingWishlist, setUpdatingWishlist] = useState(false);
 
   // The selected color option is the sellable item when a variant has colors.
-  const basePrice = selectedVariant?.sale_price ?? product.price_range?.min ?? 0;
+  const basePrice =
+    selectedVariant?.discount_price ??
+    selectedVariant?.sale_price ??
+    product.price_range?.min ??
+    0;
   const optionBase =
     selectedOption?.regular_price ??
     selectedOption?.sale_price ??
@@ -805,13 +809,31 @@ export default function ProductDetailClient({
                             <Package className="h-10 w-10" />
                           </div>
                         )}
+                        {rp.has_discount === true &&
+                          rp.regular_price != null &&
+                          rp.price != null &&
+                          rp.regular_price > rp.price && (
+                            <span className="absolute top-2 left-2 rounded bg-red-500 px-1.5 py-0.5 text-[11px] font-bold text-white shadow-sm">
+                              -{rp.discount_percent ??
+                                Math.round(((rp.regular_price - rp.price) / rp.regular_price) * 100)}%
+                            </span>
+                          )}
                       </div>
                       <div className="p-3">
                         <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
                           {rp.name}
                         </h3>
-                        <p className="text-base font-bold text-gray-900 mt-1">
-                          ৳{(rp.price ?? 0).toLocaleString("en-BD")}
+                        <p className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="text-base font-bold text-[var(--color-primary)]">
+                            ৳{(rp.price ?? 0).toLocaleString("en-BD")}
+                          </span>
+                          {rp.regular_price != null &&
+                            rp.price != null &&
+                            rp.regular_price > rp.price && (
+                              <span className="text-xs text-gray-400 line-through">
+                                ৳{rp.regular_price.toLocaleString("en-BD")}
+                              </span>
+                            )}
                         </p>
                       </div>
                     </Link>
