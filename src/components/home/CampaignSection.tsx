@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
 import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselDots,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 /** Never show a broken "৳0" price — if the computed (discounted) price is invalid
  *  fall back to the regular price. */
@@ -64,61 +73,81 @@ export default function CampaignSection({ campaigns }: { campaigns: Campaign[] }
                 </Link>
               </div>
 
-              <div className="relative products-carousel">
-                {campaign.products.slice(0, 4).map((product) => {
-                  const price = displayPrice(product);
-                  const off = discountOf(product);
-                  const regular = product.regular_price ?? product.original_price;
-                  const showRegular = typeof regular === "number" && regular > price;
+              <Carousel
+                opts={{
+                  loop: true,
+                  align: "start",
+                  duration: 40,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 4000,
+                    stopOnInteraction: false,
+                    stopOnMouseEnter: true,
+                  }),
+                ]}
+                className="relative"
+              >
+                <CarouselContent>
+                  {campaign.products.map((product) => {
+                    const price = displayPrice(product);
+                    const off = discountOf(product);
+                    const regular = product.regular_price ?? product.original_price;
+                    const showRegular = typeof regular === "number" && regular > price;
 
-                  return (
-                    <div key={product.id} className="product-card-item">
-                      <Link
-                        href={`/product/${product.slug}`}
-                        className="block rounded-xl bg-white p-3 shadow-sm hover:shadow-md"
+                    return (
+                      <CarouselItem
+                        key={product.id}
+                        className="min-w-0 basis-[80%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                       >
-                        <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-                          {product.main_image && (
-                            <img
-                              src={product.main_image}
-                              alt={product.name}
-                              className="h-full w-full object-cover"
-                            />
-                          )}
-                          {off > 0 && (
-                            <span className="absolute left-2 top-2 rounded bg-red-500 px-1.5 py-0.5 text-[11px] font-bold text-white shadow-sm">
-                              -{off}%
+                        <Link
+                          href={`/product/${product.slug}`}
+                          className="block h-full rounded-xl bg-white p-3 shadow-sm hover:shadow-md"
+                        >
+                          <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+                            {product.main_image && (
+                              <img
+                                src={product.main_image}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            )}
+                            {off > 0 && (
+                              <span className="absolute left-2 top-2 rounded bg-red-500 px-1.5 py-0.5 text-[11px] font-bold text-white shadow-sm">
+                                -{off}%
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-2 line-clamp-1 text-sm font-medium text-gray-900">
+                            {product.name}
+                          </p>
+                          <p className="mt-1 flex items-center gap-2">
+                            <span className="text-sm font-bold text-orange-600">
+                              ৳{price.toLocaleString("en-BD")}
                             </span>
-                          )}
-                        </div>
-                        <p className="mt-2 line-clamp-1 text-sm font-medium text-gray-900">
-                          {product.name}
-                        </p>
-                        <p className="mt-1 flex items-center gap-2">
-                          <span className="text-sm font-bold text-orange-600">
-                            ৳{price.toLocaleString("en-BD")}
-                          </span>
-                          {showRegular && (
-                            <span className="text-xs text-gray-400 line-through">
-                              ৳{regular.toLocaleString("en-BD")}
-                            </span>
-                          )}
-                        </p>
-                        <QuickAddCardButton
-                          product={{
-                            id: product.id,
-                            name: product.name,
-                            slug: product.slug,
-                            main_image: product.main_image ?? null,
-                            price,
-                          }}
-                          className="mt-2"
-                        />
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
+                            {showRegular && (
+                              <span className="text-xs text-gray-400 line-through">
+                                ৳{regular.toLocaleString("en-BD")}
+                              </span>
+                            )}
+                          </p>
+                          <QuickAddCardButton
+                            product={{
+                              id: product.id,
+                              name: product.name,
+                              slug: product.slug,
+                              main_image: product.main_image ?? null,
+                              price,
+                            }}
+                            className="mt-2"
+                          />
+                        </Link>
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                <CarouselDots className="mt-4" />
+              </Carousel>
             </div>
           </div>
         ))}
