@@ -45,15 +45,15 @@ export default function CategoryScroll({
             setApi={setEmblaApi}
             className="overflow-hidden"
           >
-            <CarouselContent className="flex gap-4 pb-2 scrollbar-hide">
+            <CarouselContent className="flex gap-4 pb-2 scrollbar-hide px-5 md:px-0">
               {categories.map((category) => (
                 <CarouselItem
                   key={category.id}
-                  className="pl-0 basis-[calc((100vw-4rem)/3.5)] max-w-[220px]"
+                  className="pl-0 basis-[calc((100vw-4rem)/3.5)] lg:basis-[calc((100vw-4rem)/5.5)] max-w-[220px]"
                 >
                   <Link
                     href={`/category/${category.slug}`}
-                    className="group flex min-h-full min-w-0 flex-col items-center gap-2 rounded-3xl border border-gray-200 bg-white px-4 py-4 text-center transition hover:border-[var(--color-primary)] hover:shadow-lg"
+                    className="group flex min-h-full min-w-0 flex-col items-center gap-2 rounded-3xl md:border border-gray-200 bg-white px-4 py-4 text-center transition hover:border-[var(--color-primary)] hover:shadow-lg"
                     aria-label={`Shop ${category.name}`}
                   >
                     <div className="relative h-[72px] w-[72px] overflow-hidden rounded-full bg-gray-100 shadow-sm ring-2 ring-transparent transition-all duration-200 group-hover:ring-[var(--color-primary)] group-hover:shadow-md">

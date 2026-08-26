@@ -43,7 +43,13 @@ export default function CampaignSection({ campaigns }: { campaigns: Campaign[] }
         {campaigns.map((campaign) => (
           <div
             key={campaign.id}
-            className="overflow-hidden rounded-2xl border border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50"
+            className="overflow-hidden rounded-2xl "
+            style={{
+              borderColor: "color-mix(in srgb, var(--color-primary) 40%, transparent)",
+              backgroundColor: campaign.banner_image
+                ? "color-mix(in srgb, var(--color-primary) 8%, #ffffff)"
+                : "color-mix(in srgb, var(--color-primary) 18%, #ffffff)",
+            }}
           >
             <div className="relative p-5 sm:p-7">
               {campaign.banner_image && (

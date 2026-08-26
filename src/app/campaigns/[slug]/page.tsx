@@ -48,11 +48,37 @@ export default async function CampaignPage({ params }: { params: Promise<{ slug:
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <div className="mb-8 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-400 p-7 text-white">
-        <p className="text-sm font-semibold uppercase tracking-wider">Special offer</p>
-        <h1 className="mt-1 text-3xl font-bold">{campaign.name}</h1>
+      <div
+        className="mb-8 rounded-2xl p-7"
+        style={
+          campaign.banner_image
+            ? { backgroundColor: "#f97316" }
+            : { backgroundColor: "color-mix(in srgb, var(--color-primary) 18%, #ffffff)" }
+        }
+      >
+        <p
+          className="text-sm font-semibold uppercase tracking-wider"
+          style={
+            campaign.banner_image
+              ? { color: "rgba(255,255,255,0.8)" }
+              : { color: "var(--color-primary)" }
+          }
+        >
+          Special offer
+        </p>
+        <h1
+          className="mt-1 text-3xl font-bold"
+          style={{ color: campaign.banner_image ? "#ffffff" : "#111827" }}
+        >
+          {campaign.name}
+        </h1>
         {campaign.description && (
-          <p className="mt-2 max-w-2xl text-orange-50">{campaign.description}</p>
+          <p
+            className="mt-2 max-w-2xl"
+            style={{ color: campaign.banner_image ? "#ffedd5" : "#4b5563" }}
+          >
+            {campaign.description}
+          </p>
         )}
         {campaign.banner_image && (
           <img
