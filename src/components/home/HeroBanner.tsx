@@ -107,7 +107,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
                       {banner.primary_btn && (
                         <Link
                           href={banner.primary_btn_url || '/shop'}
-                          className="inline-flex h-12 items-center gap-2 rounded-full px-7 text-sm font-semibold shadow-lg transition-all hover:opacity-90 hover:shadow-xl"
+                          className="inline-flex h-8 lg:h-12 items-center gap-2 rounded-full px-5 lg:px-7 text-sm font-semibold shadow-lg transition-all hover:opacity-90 hover:shadow-xl"
                           style={{
                             backgroundColor: banner.primary_btn_color || '#1A462F',
                             color: banner.primary_btn_text_color || '#ffffff',
