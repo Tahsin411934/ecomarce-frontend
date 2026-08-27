@@ -4,7 +4,8 @@ import { REVALIDATE } from "@/config/revalidate";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
 import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
 
-export const revalidate = REVALIDATE.CAMPAIGN;
+// Freshness is centrally controlled via fetch-level revalidate
+// (REVALIDATE.CAMPAIGN in src/config/revalidate.ts — see the fetch below).
 
 function displayPrice(p: CampaignProduct): number {
   const final = typeof p.price === "number" && isFinite(p.price) && p.price > 0 ? p.price : null;

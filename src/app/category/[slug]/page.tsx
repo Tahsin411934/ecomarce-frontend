@@ -1,12 +1,8 @@
 import { categoryProductsService } from "@/services/category-products.service";
 import { categoryService } from "@/services/category.service";
 import CategoryProductsPage from "@/components/category/CategoryProductsPage";
-import { REVALIDATE } from "@/config/revalidate";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-// Freshness window from the central config (src/config/revalidate.ts).
-export const revalidate = REVALIDATE.CATEGORY;
 
 interface Props {
   params: Promise<{ slug: string }>;

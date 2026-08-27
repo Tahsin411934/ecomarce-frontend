@@ -3,11 +3,11 @@ import CategoryScrollServer from "@/components/home/CategoryScrollServer";
 import HomePageServer from "@/components/home/HomePageServer";
 import CampaignSection from "@/components/home/CampaignSection";
 import { campaignService } from "@/services/campaign.service";
-import { REVALIDATE } from "@/config/revalidate";
 import type { Metadata } from "next";
 
-// Homepage freshness is controlled centrally in src/config/revalidate.ts.
-export const revalidate = REVALIDATE.HOME_PAGE;
+// Homepage freshness is controlled centrally in src/config/revalidate.ts
+// (consumed by services at the fetch level — do NOT add `export const revalidate`
+// here: build-time analyzers only accept inline literals, not imported values).
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/\/+$/, "");
 const SITE_NAME = "OneHaat.bd";

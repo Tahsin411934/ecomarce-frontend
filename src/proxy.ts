@@ -1,6 +1,7 @@
 // ============================================================
-// Middleware - Route protection for authenticated/guest pages
+// Proxy - Route protection for authenticated/guest pages
 // Uses the httpOnly token cookie to determine auth status.
+// (Renamed from "middleware" to "proxy" in Next.js 16.)
 // ============================================================
 
 import { NextResponse } from "next/server";
@@ -23,7 +24,7 @@ function isRouteMatch(pathname: string, routes: string[]) {
   return routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authToken = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
 
@@ -38,7 +39,7 @@ export function middleware(request: NextRequest) {
 
   // Do not automatically redirect authenticated users away from guest pages here.
   // Client-side components (AuthGuard) will perform proper validation and redirects
-  // so middleware should avoid making assumptions based solely on cookie presence.
+  // so proxy should avoid making assumptions based solely on cookie presence.
 
   return NextResponse.next();
 }

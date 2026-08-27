@@ -1,10 +1,7 @@
 import { subnavbarService } from "@/services/subnavbar.service";
 import SubnavbarProductsPage from "@/components/subnavbar/SubnavbarProductsPage";
-import { REVALIDATE } from "@/config/revalidate";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-export const revalidate = REVALIDATE.SUBNAVBAR;
 
 interface Props {
   params: Promise<{ slug: string }>;
