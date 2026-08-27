@@ -53,7 +53,7 @@ export default function CategoryScroll({
                 >
                   <Link
                     href={`/category/${category.slug}`}
-                    className="group flex min-h-full min-w-0 flex-col items-center gap-2 rounded-3xl md:border border-gray-200 bg-white px-4 py-4 text-center transition hover:border-[var(--color-primary)] hover:shadow-lg"
+                    className="group flex min-h-full min-w-0 flex-col items-center gap-2 rounded-3xl boeder-none md:border border-gray-200 bg-white px-4 py-4 text-center transition hover:border-[var(--color-primary)] hover:shadow-lg"
                     aria-label={`Shop ${category.name}`}
                   >
                     <div className="relative h-[72px] w-[72px] overflow-hidden rounded-full bg-gray-100 shadow-sm ring-2 ring-transparent transition-all duration-200 group-hover:ring-[var(--color-primary)] group-hover:shadow-md">
