@@ -28,19 +28,33 @@ async function apiRequest<T>(path: string, init: RequestInit): Promise<T> {
     cache: "no-store",
   });
 
-  const data = await response.json().catch(() => ({ message: "Invalid response from server" }));
+  const raw = await response.json().catch(() => ({ message: "Invalid response from server" }));
 
   if (!response.ok) {
-    const error = new Error((data as ApiError).message || "Authentication request failed") as Error & {
+    const error = new Error((raw as ApiError).message || "Authentication request failed") as Error & {
       status?: number;
       errors?: Record<string, string[]>;
     };
     error.status = response.status;
-    error.errors = (data as ApiError).errors;
+    error.errors = (raw as ApiError).errors;
     throw error;
   }
 
-  return data as T;
+  // The backend wraps every payload in a `{ status, message, data }` envelope
+  // (see backend app/Helpers/ApiResponse.php and frontend src/lib/api.ts).
+  // Unwrap object payloads so callers can read `token` / `user` directly.
+  // Message-only responses (payload is null) are returned as-is.
+  const envelope = raw as { data?: unknown };
+  const payload =
+    envelope !== null &&
+    typeof envelope === "object" &&
+    "data" in envelope &&
+    envelope.data !== null &&
+    typeof envelope.data === "object"
+      ? envelope.data
+      : raw;
+
+  return payload as T;
 }
 
 async function setTokenCookie(token: string): Promise<void> {
@@ -122,7 +136,7 @@ export async function loginAction(
   formData: FormData
 ): Promise<AuthFormState> {
   try {
-    const data = await apiRequest<{ status: string; message: string; user?: any; token?: string }>('/login', {
+    const data = await apiRequest<{ status: string; message: string; user?: any; token?: string; access_token?: string }>('/login', {
       method: 'POST',
       body: JSON.stringify({
         email: formData.get('email'),
@@ -130,17 +144,18 @@ export async function loginAction(
       }),
     });
 
-    if (!data.token) {
+    const token = data.token ?? data.access_token ?? null;
+    if (!token) {
       throw new Error('Authentication token was not returned by the server.');
     }
 
-    await setTokenCookie(data.token);
+    await setTokenCookie(token);
 
     return {
       success: true,
       message: data.message || 'Login successful.',
       user: data.user,
-      token: data.token,
+      token,
     };
   } catch (error: any) {
     return {
@@ -276,7 +291,6 @@ export async function getAuthenticatedUserAction(): Promise<{
 }> {
   try {
     const token = (await cookies()).get(TOKEN_COOKIE_NAME)?.value;
-    console.log('Fetching authenticated user with token:', token);
     const data = await apiRequest<{ status: string; user?: any }>('/me', {
       method: 'GET',
       headers: {
