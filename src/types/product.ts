@@ -46,11 +46,13 @@ export interface PaginationInfo {
 }
 
 export interface CategoryProductsRawResponse {
-  success: boolean;
-  message: string;
-  data: import("./category").Category;
-  products: ProductListItem[];
-  meta?: PaginationInfo;
+  status?: string;
+  message?: string;
+  data: {
+    category: import("./category").Category;
+    products: ProductListItem[];
+    meta?: PaginationInfo;
+  };
 }
 
 export interface CategoryProductsData {

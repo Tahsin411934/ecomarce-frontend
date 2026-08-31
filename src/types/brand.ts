@@ -13,8 +13,10 @@ export interface BrandsMeta {
 }
 
 export interface BrandsRawResponse {
-  success: boolean;
-  message: string;
-  data: Brand[];
-  meta?: BrandsMeta;
+  status?: string;
+  message?: string;
+  data: {
+    items: Brand[];
+    meta?: BrandsMeta;
+  };
 }

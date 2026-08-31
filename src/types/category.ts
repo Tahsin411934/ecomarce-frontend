@@ -23,5 +23,5 @@ export interface CategoryResponse {
 export interface SingleCategoryResponse {
   success: boolean;
   message: string;
-  data: Category;
+  data: Category | null;
 }

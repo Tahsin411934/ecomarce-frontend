@@ -12,9 +12,12 @@ export interface Banner {
   secondary_btn_color?: string;
   secondary_btn_text_color?: string;
   banner_image?: string;
+  sort_order?: number;
+  status?: string;
 }
 
 export interface BannerResponse {
   success: boolean;
+  message?: string;
   data: Banner[];
 }

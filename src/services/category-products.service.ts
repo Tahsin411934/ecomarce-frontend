@@ -43,10 +43,12 @@ export const categoryProductsService = {
       tags: [`category-products-${slug}`],
     });
 
+    // Raw payload: { status, message, data: { category, products, meta } } —
+    // unwrap the inner object (products/meta are no longer top-level keys).
     return {
-      category: res.data,
-      products: res.products || [],
-      meta: res.meta,
+      category: res.data.category,
+      products: res.data.products ?? [],
+      meta: res.data.meta,
     };
   },
 };

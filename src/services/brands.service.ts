@@ -13,6 +13,7 @@ export const brandsService = {
     const res = await api<BrandsRawResponse>(`/brands?${query.toString()}`, {
       cache: "no-store",
     });
-    return { data: res.data || [], meta: res.meta };
+    // Raw payload: { status, message, data: { items: Brand[], meta } } — unwrap.
+    return { data: res.data?.items ?? [], meta: res.data?.meta };
   },
 };

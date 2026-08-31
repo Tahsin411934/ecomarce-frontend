@@ -10,8 +10,8 @@ export interface Review {
 
 export interface ReviewResponse {
   success: boolean;
-  data: Review[];
-  average_rating: number;
-  total_reviews: number;
   message?: string;
+  data: Review[];
+  average_rating?: number;
+  total_reviews?: number;
 }
