@@ -152,7 +152,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const logoUrl = siteLogo
     ? siteLogo.startsWith("http")
       ? siteLogo
-      : `${process.env.BACKEND_API_URL || "https://pos.aftsoftandlimited.com"}${siteLogo}`
+      : `${process.env.BACKEND_API_URL || "https://admin.onehaatbd.com"}${siteLogo}`
     : `${SITE_URL}/og-image.jpg`;
 
   const organizationJsonLd = {
@@ -203,8 +203,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
         {gtmHeaderCode ? <script dangerouslySetInnerHTML={{ __html: getGtmScriptContent(gtmHeaderCode) }} /> : null}
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com"} crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com"} />
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || "https://admin.onehaatbd.com"} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || "https://admin.onehaatbd.com"} />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

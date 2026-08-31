@@ -19,7 +19,7 @@ HomePageServer: sections [
       name: 'Neckband',
       slug: 'neckband',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/4uOFNLQwb3Z3HabPCVqVSiAjcepnhfq7KIIwrpUR.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/4uOFNLQwb3Z3HabPCVqVSiAjcepnhfq7KIIwrpUR.jpg'
     },
     products: [ [Object], [Object], [Object] ]
   },
@@ -30,7 +30,7 @@ HomePageServer: sections [
       name: 'TWS Earbuds',
       slug: 'tws-earbuds',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/ovsJMUCMce8LvB6844GK48u5kefGMOAxz0z5dXYm.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/ovsJMUCMce8LvB6844GK48u5kefGMOAxz0z5dXYm.jpg'
     },
     products: [ [Object], [Object], [Object], [Object], [Object] ]
   },
@@ -85,7 +85,7 @@ HomePageServer: sections [
       name: 'Over-Ear Headphones',
       slug: 'over-ear-headphones',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/vrQngH82FDSGfUwEiTDL2hdI4ZCQDFRxDNQFxqjN.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/vrQngH82FDSGfUwEiTDL2hdI4ZCQDFRxDNQFxqjN.jpg'
     },
     products: [ [Object] ]
   },
@@ -96,7 +96,7 @@ HomePageServer: sections [
       name: 'Neckband Wireless Earphones',
       slug: 'neckband-wireless-earphones',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/Dm7NqxlaPooLTb8CESj1kVUK0dEsPvRe8p9UuKrv.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/Dm7NqxlaPooLTb8CESj1kVUK0dEsPvRe8p9UuKrv.jpg'
     },
     products: [ [Object], [Object], [Object] ]
   },
@@ -153,7 +153,7 @@ HomePageServer: sections [
       name: 'Neckband',
       slug: 'neckband',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/4uOFNLQwb3Z3HabPCVqVSiAjcepnhfq7KIIwrpUR.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/4uOFNLQwb3Z3HabPCVqVSiAjcepnhfq7KIIwrpUR.jpg'
     },
     products: [ [Object], [Object], [Object] ]
   },
@@ -164,7 +164,7 @@ HomePageServer: sections [
       name: 'TWS Earbuds',
       slug: 'tws-earbuds',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/ovsJMUCMce8LvB6844GK48u5kefGMOAxz0z5dXYm.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/ovsJMUCMce8LvB6844GK48u5kefGMOAxz0z5dXYm.jpg'
     },
     products: [ [Object], [Object], [Object], [Object], [Object] ]
   },
@@ -219,7 +219,7 @@ HomePageServer: sections [
       name: 'Over-Ear Headphones',
       slug: 'over-ear-headphones',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/vrQngH82FDSGfUwEiTDL2hdI4ZCQDFRxDNQFxqjN.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/vrQngH82FDSGfUwEiTDL2hdI4ZCQDFRxDNQFxqjN.jpg'
     },
     products: [ [Object] ]
   },
@@ -230,7 +230,7 @@ HomePageServer: sections [
       name: 'Neckband Wireless Earphones',
       slug: 'neckband-wireless-earphones',
       description: null,
-      image: 'https://pos.aftsoftandlimited.com/storage/categories/Dm7NqxlaPooLTb8CESj1kVUK0dEsPvRe8p9UuKrv.jpg'
+      image: 'https://admin.onehaatbd.com/storage/categories/Dm7NqxlaPooLTb8CESj1kVUK0dEsPvRe8p9UuKrv.jpg'
     },
     products: [ [Object], [Object], [Object] ]
   },

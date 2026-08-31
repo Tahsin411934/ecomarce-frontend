@@ -1,5 +1,5 @@
 export function buildApiUrl(path: string): string {
-  const configuredBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com").trim();
+  const configuredBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://admin.onehaatbd.com").trim();
   const normalizedBaseUrl = configuredBaseUrl.replace(/\/+$/, "");
   const endpoint = path.startsWith("/") ? path : `/${path}`;
 

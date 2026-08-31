@@ -1,6 +1,6 @@
 import type { ProductRequestPayload, ProductRequestResponse } from "@/types/product-request";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://pos.aftsoftandlimited.com/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://admin.onehaatbd.com/api/v1";
 
 export async function submitProductRequest(
   data: ProductRequestPayload
