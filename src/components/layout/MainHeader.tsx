@@ -12,6 +12,7 @@ import RequestProductModal from "@/components/product/RequestProductModal";
 import AccountDropdown from "@/components/auth/AccountDropdown";
 import { type Category } from "@/types/category";
 import { type Settings } from "./NavbarServer";
+import { normalizeAssetUrl } from "@/lib/asset-url";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setUser, fetchCurrentUser } from "@/lib/features/auth/authSlice";
 import { selectCartCount, toggleCart } from "@/lib/features/cart/cartSlice";
@@ -112,7 +113,7 @@ export default function MainHeader({ serverCategories, serverSettings, serverUse
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0.5 shrink-0">
           {serverSettings?.site_logo ? (
-            <img src={`${process.env.BACKEND_API_URL}${serverSettings.site_logo}`} alt={serverSettings.site_name || "OneHaatbd"} className="h-10 w-auto object-contain" />
+            <img src={normalizeAssetUrl(serverSettings.site_logo)} alt={serverSettings.site_name || "OneHaatbd"} className="h-10 w-auto object-contain" />
           ) : (
             <>
               <span className="text-[30px] font-bold tracking-tight text-[#111827]">

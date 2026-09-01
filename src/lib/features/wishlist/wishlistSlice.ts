@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import { normalizeAssetUrl } from "@/lib/asset-url";
 import * as wishlistService from "@/services/wishlist.service";
 
 export interface WishlistItem {
@@ -31,11 +32,11 @@ function loadInitialState(): WishlistState {
 
     const parsed = JSON.parse(stored);
     if (Array.isArray(parsed)) {
-      return { items: parsed, isLoading: false, error: null };
+      return { items: normalizeStoredItems(parsed), isLoading: false, error: null };
     }
     if (parsed && typeof parsed === "object" && Array.isArray(parsed.items)) {
       return {
-        items: parsed.items,
+        items: normalizeStoredItems(parsed.items),
         isLoading: parsed.isLoading ?? false,
         error: parsed.error ?? null,
       };
@@ -44,6 +45,15 @@ function loadInitialState(): WishlistState {
     // Ignore parse errors
   }
   return initialState;
+}
+
+// Rewrite legacy backend hosts (pos.aftsoftandlimited.com) persisted in older
+// wishlist entries so images keep resolving after the domain migration.
+function normalizeStoredItems(items: WishlistItem[]): WishlistItem[] {
+  return items.map((item) => ({
+    ...item,
+    image: normalizeAssetUrl(item.image) || null,
+  }));
 }
 
 function saveWishlist(items: WishlistItem[]) {

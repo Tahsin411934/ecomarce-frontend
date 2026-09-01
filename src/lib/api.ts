@@ -1,4 +1,5 @@
 import { buildApiUrl } from "@/lib/api-url";
+import { rewriteLegacyAssetHosts } from "@/lib/asset-url";
 
 interface ApiOptions extends RequestInit {
   revalidate?: number;
@@ -98,5 +99,7 @@ export async function api<T>(
     throw new Error(errorBody.message || `API Error: ${response.status}`);
   }
 
-  return await response.json();
+  // Rewrite any legacy backend hosts (pos.aftsoftandlimited.com) that may be
+  // baked into cached/stored data so image URLs always resolve.
+  return rewriteLegacyAssetHosts(await response.json());
 }

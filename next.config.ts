@@ -31,6 +31,13 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        // Legacy backend host (migrated to admin.onehaatbd.com) — kept so any
+        // stale URL that slips through does not crash the image optimizer.
+        protocol: "https",
+        hostname: "pos.aftsoftandlimited.com",
+        pathname: "/**",
+      },
+      {
         protocol: "https",
         hostname: "onehaatbd.com",
         pathname: "/**",

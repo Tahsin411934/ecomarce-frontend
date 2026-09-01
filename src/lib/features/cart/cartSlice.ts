@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { normalizeAssetUrl } from "@/lib/asset-url";
 
 export interface CartItem {
   id: number;
@@ -24,7 +25,13 @@ function loadCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
     const saved = localStorage.getItem("cart_items");
-    return saved ? JSON.parse(saved) : [];
+    const items: CartItem[] = saved ? JSON.parse(saved) : [];
+    // Rewrite legacy backend hosts (pos.aftsoftandlimited.com) persisted in
+    // older cart entries so images keep resolving after the domain migration.
+    return items.map((item) => ({
+      ...item,
+      image: normalizeAssetUrl(item.image) || null,
+    }));
   } catch {
     return [];
   }

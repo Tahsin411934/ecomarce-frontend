@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { buildApiUrl } from "@/lib/api-url";
+import { rewriteLegacyAssetHosts } from "@/lib/asset-url";
 import { REVALIDATE } from "@/config/revalidate";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
 import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
@@ -45,7 +46,9 @@ export default async function CampaignPage({ params }: { params: Promise<{ slug:
     );
   }
 
-  const { data: campaign } = (await response.json()) as { data: Campaign };
+  const { data: campaign } = rewriteLegacyAssetHosts(
+    (await response.json()) as { data: Campaign }
+  ) as { data: Campaign };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">

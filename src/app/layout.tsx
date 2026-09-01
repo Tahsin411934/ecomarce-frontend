@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import ToastProvider from "@/components/ui/ToastProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
 import FloatingCartButton from "@/components/cart/FloatingCartButton";
+import { normalizeAssetUrl } from "@/lib/asset-url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -150,9 +151,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } catch {}
 
   const logoUrl = siteLogo
-    ? siteLogo.startsWith("http")
-      ? siteLogo
-      : `${process.env.BACKEND_API_URL || "https://admin.onehaatbd.com"}${siteLogo}`
+    ? normalizeAssetUrl(siteLogo) || `${SITE_URL}/og-image.jpg`
     : `${SITE_URL}/og-image.jpg`;
 
   const organizationJsonLd = {
