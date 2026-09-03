@@ -38,7 +38,19 @@ async function fetchServerUser(): Promise<any> {
 
     if (!res.ok) return null;
     const data = await res.json();
-    return data?.user ?? null;
+    // The backend wraps every payload in a `{ status, message, data }` envelope
+    // (see src/app/actions/auth.ts apiRequest) — the user therefore sits at
+    // `data.data.user`, NOT at the top level. Fall back to a top-level `user`
+    // key in case the envelope is ever removed on the backend.
+    const envelope = data as { data?: unknown; user?: unknown } | null;
+    const payload =
+      envelope &&
+      typeof envelope === "object" &&
+      envelope.data !== null &&
+      typeof envelope.data === "object"
+        ? (envelope.data as { user?: unknown })
+        : envelope;
+    return payload?.user ?? null;
   } catch {
     return null;
   }

@@ -23,6 +23,10 @@ export const fetchCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getAuthenticatedUser();
+      // The /me proxy must yield a concrete user — never fulfil with
+      // `undefined`, otherwise `isAuthenticated` would be true while `user`
+      // stays falsy and the navbar would render the guest menu.
+      if (!response?.user) return rejectWithValue(null);
       return response.user;
     } catch (error: any) {
       if (error.status === 401) return rejectWithValue(null);

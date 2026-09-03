@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { User, LogOut, Shield, Truck, LogIn } from "lucide-react";
+import { User, LogOut, Shield, Truck, LogIn, LayoutDashboard } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,6 +65,15 @@ export default function AccountDropdown() {
               >
                 <Truck className="h-4 w-4" />
                 <span>My Orders</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium hover:bg-[#F0FDF4] hover:text-[var(--color-primary)]"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Dashboard</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { loginUser } from "@/app/actions/auth";
 import type { AuthFormState } from "@/lib/features/auth/auth.types";
 import { trackLogin } from "@/lib/gtm";
+import { useAppDispatch } from "@/lib/hooks";
+import { setUser } from "@/lib/features/auth/authSlice";
 
 const initialState: AuthFormState = {
   success: false,
@@ -19,10 +21,15 @@ export default function LoginPage() {
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [state, formAction, pending] = useActionState(loginUser, initialState);
+  const dispatch = useAppDispatch();
 
   // Show toast on success/error, then redirect on success
   useEffect(() => {
     if (state.success) {
+      // The server action already returns the logged-in user — sync it into
+      // Redux right away so the navbar flips to the logged-in menu
+      // (Profile / Orders / Dashboard) without waiting for the redirect.
+      if (state.user) dispatch(setUser(state.user));
       // GTM: Track login
       trackLogin({ method: "email" });
       toast.success(state.message || "Login successful!");
@@ -30,7 +37,7 @@ export default function LoginPage() {
     } else if (state.message) {
       toast.error(state.message, { toastId: "login-error" });
     }
-  }, [state.success, state.message, router, redirectTo]);
+  }, [state.success, state.message, state.user, dispatch, router, redirectTo]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
