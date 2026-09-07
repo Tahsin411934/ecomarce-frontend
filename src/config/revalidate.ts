@@ -36,4 +36,6 @@ export const REVALIDATE = {
   NAVBAR: 60, // 1 minute
   /** Site settings (footer, theme, GTM). */
   SETTINGS: 3600, // 1 hour
+  /** Sitemap feed from backend (products-count / products chunk). */
+  SITEMAP: 3600, // 1 hour — matches the /sitemap.xml ISR window
 } as const;
