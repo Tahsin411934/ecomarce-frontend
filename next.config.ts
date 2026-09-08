@@ -89,6 +89,19 @@ const nextConfig: NextConfig = {
     ];
   },
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      // Sitemap product chunks: /sitemap/products-0.xml → /sitemap-chunk/0.
+      // Turbopack does not match dynamic route segments whose URL segment
+      // contains a dot, so chunk files are rewritten to a dot-free internal
+      // route. afterFiles (array form) keeps /sitemap.xml and
+      // /sitemap/static.xml — real filesystem routes — matching first.
+      {
+        source: "/sitemap/products-:num(\\d+).xml",
+        destination: "/sitemap-chunk/:num",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

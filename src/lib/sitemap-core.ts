@@ -1,4 +1,3 @@
-import type { MetadataRoute } from "next";
 import { campaignService } from "@/services/campaign.service";
 import { categoryProductsService } from "@/services/category-products.service";
 import { categoryService } from "@/services/category.service";
@@ -6,31 +5,44 @@ import { navbarService } from "@/services/navbar.service";
 import { sitemapService } from "@/services/sitemap.service";
 import type { Category } from "@/types/category";
 
-// ISR on the metadata route: the sitemap index AND every sub-sitemap are
-// revalidated in the background every hour, so crawler hits are served from
-// Next's cache and never trigger a Laravel request per hit.
-export const revalidate = 3600;
+// ---------------------------------------------------------------------------
+// Shared core for the explicit sitemap route handlers:
+//   /sitemap.xml             → XML Sitemap Index (lists all chunk files)
+//   /sitemap/static.xml      → home + categories + sub-navbars + campaigns
+//   /sitemap/products-0.xml  → product chunk 0, products-1.xml, ...
+//     (rewritten in next.config.ts to the dot-free internal route
+//      /sitemap-chunk/<n> — Turbopack does not match dynamic segments
+//      whose URL segment contains a dot)
+//
+// Deterministic route handlers (not Next's auto-index) so the canonical
+// /sitemap.xml URL always works — even when the metadata generator does not.
+// ---------------------------------------------------------------------------
 
 const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/[\/]+$/, "");
 
-// ---- Sizing (sitemaps.org + Google limits) ----------------------------------
 // One file may hold at most 50 000 URLs / 50 MB. 25k keeps each XML light
-// (~1-2 MB compressed) and the Laravel page query cheap. The same number is
-// passed as the backend ?limit= so both sides can never disagree.
-const PRODUCTS_PER_CHUNK = 25_000;
-// Safety valve: total budget of 500k product URLs across chunk files.
-const MAX_CHUNKS = 20;
+// and the Laravel page query cheap. The same number is passed as the backend
+// ?limit= so both sides can never disagree.
+export const PRODUCTS_PER_CHUNK = 25_000;
+// Safety valve: total budget of 500k product URLs (MAX_CHUNKS x 25k) across
+// all chunk files.
+export const MAX_CHUNKS = 20;
 // Ceiling for the degraded path that derives slugs from category listings.
-const MAX_FALLBACK_PRODUCTS = 45_000;
+export const MAX_FALLBACK_PRODUCTS = 45_000;
 
-type SitemapEntry = MetadataRoute.Sitemap[number];
+export interface SitemapEntry {
+  url: string;
+  lastModified?: Date;
+  changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  priority?: number;
+}
 
 /**
  * Build a single sitemap entry for `path`, rooted at the canonical site URL.
  * `lastModified` is only emitted when real data exists so the sitemap never
  * claims a page changed when it did not.
  */
-function page(
+export function page(
   path: string,
   {
     lastModified,
@@ -51,10 +63,42 @@ function page(
 }
 
 // Deterministic ordering keeps output stable and diffs small across deploys.
-function sortEntries(entries: SitemapEntry[]): SitemapEntry[] {
+export function sortEntries(entries: SitemapEntry[]): SitemapEntry[] {
   return entries.sort((a, b) => (a.url > b.url ? 1 : 0) - (a.url < b.url ? 1 : 0));
 }
 
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Serialize `entries` into a complete `<urlset>` XML document. */
+export function xmlUrlset(entries: SitemapEntry[]): string {
+  const body = entries
+    .map((entry) => {
+      const lastmod = entry.lastModified
+        ? `<lastmod>${entry.lastModified.toISOString()}</lastmod>`
+        : "";
+      const freq = entry.changeFrequency
+        ? `<changefreq>${entry.changeFrequency}</changefreq>`
+        : "";
+      const priority = entry.priority !== undefined
+        ? `<priority>${entry.priority}</priority>`
+        : "";
+      return `<url><loc>${escapeXml(entry.url)}</loc>${lastmod}${freq}${priority}</url>`;
+    })
+    .join("\n");
+
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    body,
+    `</urlset>`,
+  ].join("\n");
+}
 // Sub-category (subnavbar child) slugs exposed by the navigation menu.
 async function getSubnavbarSlugs(): Promise<string[]> {
   try {
@@ -67,7 +111,6 @@ async function getSubnavbarSlugs(): Promise<string[]> {
     }
     return slugs;
   } catch {
-    // Static page tree still renders if navigation is unavailable.
     return [];
   }
 }
@@ -87,8 +130,8 @@ async function getActiveCampaigns(): Promise<{ slug: string; endsAt?: Date }[]> 
   }
 }
 
-// Every non-product URL: home, the category tree, sub-navigation and campaigns.
-async function staticPages(): Promise<SitemapEntry[]> {
+// Every non-product URL: home, the category tree, sub-navigation and campaign pages.
+export async function staticPages(): Promise<SitemapEntry[]> {
   let categories: Category[] = [];
   try {
     categories = (await categoryService.getAll()).data;
@@ -104,7 +147,7 @@ async function staticPages(): Promise<SitemapEntry[]> {
   // Only public, indexable pages. Session/account URLs (cart, checkout,
   // login, orders, wishlist...) are deliberately absent — they are also
   // disallowed in robots.txt and would only waste crawl budget.
-  const staticPages: SitemapEntry[] = [
+  const staticEntries: SitemapEntry[] = [
     page("/", { changeFrequency: "daily", priority: 1.0 }),
     page("/categories", { changeFrequency: "weekly", priority: 0.9 }),
     page("/product-request", { changeFrequency: "monthly", priority: 0.5 }),
@@ -126,13 +169,13 @@ async function staticPages(): Promise<SitemapEntry[]> {
     })
   );
 
-  return [...staticPages, ...categoryPages, ...subnavbarPages, ...campaignPages];
+  return [...staticEntries, ...categoryPages, ...subnavbarPages, ...campaignPages];
 }
 
 // ---- Products (chunked via the dedicated Laravel sitemap feed) ----
 // Primary path: one page of { slug, updated_at } from the backend, already
-// filtered to indexable (active / published / not-deleted / noindex=off) rows.
-async function getProductChunk(index: number): Promise<SitemapEntry[]> {
+// filtered to indexable rows; the Laravel endpoint handles SEO filtering.
+export async function getProductChunk(index: number): Promise<SitemapEntry[]> {
   try {
     const products = await sitemapService.getProducts(index + 1, PRODUCTS_PER_CHUNK);
     const entries = products
@@ -200,7 +243,7 @@ async function aggregateProductSlugsFromCategories(): Promise<string[]> {
 }
 
 // Number of product sub-sitemaps to advertise in the index.
-async function getProductChunkCount(): Promise<number> {
+export async function getProductChunkCount(): Promise<number> {
   try {
     const data = await sitemapService.getProductCount();
     if (data.total > 0) {
@@ -213,33 +256,22 @@ async function getProductChunkCount(): Promise<number> {
   return 1;
 }
 
-/**
- * Index generator — Next.js calls this to build /sitemap.xml, which
- * auto-links every sub-sitemap: /sitemap/static.xml, /sitemap/products-0.xml, …
- */
-export async function generateSitemaps(): Promise<{ id: string }[]> {
+/** Serialize the XML sitemapindex (the canonical /sitemap.xml) listing every chunk file. */
+export async function sitemapIndexXml(): Promise<string> {
   const chunkCount = await getProductChunkCount();
-  const ids: { id: string }[] = [{ id: "static" }];
+  const locations: string[] = [`${BASE_URL}/sitemap/static.xml`];
   for (let i = 0; i < chunkCount; i += 1) {
-    ids.push({ id: `products-${i}` });
-  }
-  return ids;
-}
-
-export default async function sitemap(props: {
-  id: Promise<string>;
-}): Promise<MetadataRoute.Sitemap> {
-  const id = await props.id;
-
-  if (id === "static") {
-    return sortEntries(await staticPages());
+    locations.push(`${BASE_URL}/sitemap/products-${i}.xml`);
   }
 
-  const match = /^products-(\d+)$/.exec(id);
-  if (match) {
-    const index = parseInt(match[1], 10);
-    return sortEntries(await getProductChunk(index));
-  }
+  const body = locations
+    .map((loc) => `<sitemap><loc>${escapeXml(loc)}</loc></sitemap>`)
+    .join("\n");
 
-  return [];
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    body,
+    `</sitemapindex>`,
+  ].join("\n");
 }
