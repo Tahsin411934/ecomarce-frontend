@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { ShoppingCart, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectCartItems, selectCartTotal, selectShippingTotal, clearCart } from "@/lib/features/cart/cartSlice";
-import { checkoutApi } from "@/services/cart.service";
+import { checkoutApi, guestCheckoutApi, type CheckoutResponse } from "@/services/cart.service";
+import { useSyncDeliveryCharges } from "@/hooks/useSyncDeliveryCharges";
 import { trackBeginCheckout, trackPurchase } from "@/lib/gtm";
 
 export default function CheckoutPage() {
@@ -14,10 +15,19 @@ export default function CheckoutPage() {
   const router = useRouter();
   const items = useAppSelector(selectCartItems);
   const total = useAppSelector(selectCartTotal);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  // Auth may still be hydrating from the token / /me call. Until it settles,
+  // don't treat the visitor as a guest (avoids the "Full Name" field flashing
+  // for logged-in users, and prevents a stray guest submit).
+  const isInitialized = useAppSelector((state) => state.auth.isInitialized);
+  const isGuest = isInitialized && !isAuthenticated;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  // Guest-only field: a logged-out buyer must give their name so the order
+  // has someone to deliver to (logged-in users come from their profile).
+  const [customerName, setCustomerName] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryPhone, setDeliveryPhone] = useState("");
@@ -28,9 +38,24 @@ export default function CheckoutPage() {
   const shippingCost = useAppSelector(selectShippingTotal);
   const grandTotal = total + shippingCost;
 
+  // Pull the LIVE per-product delivery charges from the backend so the
+  // shipping row never shows stale values (e.g. after an admin change).
+  useSyncDeliveryCharges();
+
   const handleCheckout = async () => {
+    if (!isInitialized) {
+      setError("Please wait a moment and try again.");
+      return;
+    }
+
     if (!deliveryAddress || !deliveryCity || !deliveryPhone) {
       setError("Please fill in all required delivery details.");
+      return;
+    }
+
+    // Guests must provide their name (logged-in users come from profile).
+    if (isGuest && !customerName.trim()) {
+      setError("Please enter your full name.");
       return;
     }
 
@@ -49,45 +74,60 @@ export default function CheckoutPage() {
       totalValue: total,
     });
 
-    try {
-      // First sync the local cart with backend
-      const cartItems = items.map(item => ({
-        product_id: item.id,
-        variant_id: item.variant_id,
-        variant_option_id: item.variant_option_id,
-        quantity: item.quantity
-      }));
+    const cartItems = items.map(item => ({
+      product_id: item.id,
+      variant_id: item.variant_id,
+      variant_option_id: item.variant_option_id,
+      quantity: item.quantity
+    }));
 
-      // Sync cart to backend
-      const syncResult = await import("@/services/cart.service").then(module => module.syncCartApi(cartItems));
-      
-      console.log("Sync result:", syncResult); // Debug log
-      
-      if (syncResult.status !== "success") {
-        setError(syncResult.message || "Failed to sync cart. Please try again.");
-        setLoading(false);
-        return;
+    try {
+      let result: CheckoutResponse;
+
+      if (isAuthenticated) {
+        // First sync the local cart with backend
+        const syncResult = await import("@/services/cart.service").then(module => module.syncCartApi(cartItems));
+
+        console.log("Sync result:", syncResult); // Debug log
+
+        if (syncResult.status !== "success") {
+          setError(syncResult.message || "Failed to sync cart. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        // Now proceed with checkout
+        result = await checkoutApi({
+          cart_id: 0, // Backend will get the active cart for the user
+          notes: "",
+          delivery_address: deliveryAddress,
+          delivery_city: deliveryCity,
+          delivery_phone: deliveryPhone,
+          delivery_notes: deliveryNotes,
+        });
+      } else {
+        // Guest checkout — send the local cart items + name + delivery details
+        // straight to the public guest-checkout endpoint (no login required).
+        result = await guestCheckoutApi({
+          items: cartItems,
+          customer_name: customerName.trim(),
+          delivery_address: deliveryAddress,
+          delivery_city: deliveryCity,
+          delivery_phone: deliveryPhone,
+          delivery_notes: deliveryNotes,
+        });
       }
 
-      // Now proceed with checkout
-      const result = await checkoutApi({
-        cart_id: 0, // Backend will get the active cart for the user
-        notes: "",
-        delivery_address: deliveryAddress,
-        delivery_city: deliveryCity,
-        delivery_phone: deliveryPhone,
-        delivery_notes: deliveryNotes,
-      });
-
-      if (result.status === "success") {
+      if (result.status === "success" && result.order) {
+        const placedOrderNumber = result.order.order_number;
         setSuccess(true);
-        setOrderNumber(result.order.order_number);
+        setOrderNumber(placedOrderNumber);
         dispatch(clearCart());
 
         // GTM: Track purchase
         trackPurchase({
-          orderId: result.order.order_number,
-          transactionId: result.order.order_number,
+          orderId: placedOrderNumber,
+          transactionId: placedOrderNumber,
           items: items.map((item) => ({
             productId: item.id,
             productName: item.name,
@@ -217,6 +257,20 @@ export default function CheckoutPage() {
               <h2 className="text-lg font-bold text-gray-900 mb-4">Delivery Details</h2>
               
               <div className="space-y-4">
+                {isGuest && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                      required
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address *</label>
                   <textarea

@@ -12,11 +12,19 @@ import { buildApiUrl } from "@/lib/api-url";
  * Used by API route handlers:
  *   export async function GET() { return proxyApiRequest("/api/v1/orders"); }
  *   export async function POST(req: Request) { return proxyApiRequest("/api/v1/checkout", req); }
+ *
+ * Guest endpoints (guest checkout) set `allowGuest: true` so they can be
+ * forwarded without a session token — the `Authorization` header is simply
+ * omitted for those requests.
  */
-export async function proxyApiRequest(endpoint: string, request?: Request) {
+export async function proxyApiRequest(
+  endpoint: string,
+  request?: Request,
+  opts?: { allowGuest?: boolean }
+) {
   const token = (await cookies()).get("token")?.value;
 
-  if (!token) {
+  if (!token && !opts?.allowGuest) {
     return NextResponse.json(
       { status: "error", message: "Not authenticated." },
       { status: 401 }
@@ -32,7 +40,7 @@ export async function proxyApiRequest(endpoint: string, request?: Request) {
     method,
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(contentType ? { "Content-Type": contentType } : {}),
     },
     body,

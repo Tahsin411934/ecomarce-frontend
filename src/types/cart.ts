@@ -15,14 +15,28 @@ export interface CartItemData {
   delivery_charge?: number;
 }
 
+/**
+ * Shape of the backend cart APIs (`carts/sync`, `carts/my-cart`):
+ * ApiResponse::success() wraps the cart payload in `data`.
+ */
+export interface CartItemRow {
+  id: number;
+  cart_id: number;
+  variant_id: number;
+  variant_option_id?: number | null;
+  quantity: number;
+  unit_price: number;
+  /** Product-level delivery charge (৳) resolved by the backend. */
+  delivery_charge?: number;
+}
+
 export interface CartResponse {
   status: string;
   message: string;
-  cart: {
+  data: {
     id: number;
-    items: CartItemData[];
-    total: number;
-    item_count: number;
+    items: CartItemRow[];
+    total?: number;
     subtotal?: number;
     shipping_total?: number;
     grand_total?: number;

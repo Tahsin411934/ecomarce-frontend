@@ -14,11 +14,8 @@ const protectedRoutes = [
   "/profile",
   "/change-password",
   "/orders",
-  "/checkout",
   "/wishlist",
 ];
-
-const guestRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 function isRouteMatch(pathname: string, routes: string[]) {
   return routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
@@ -29,7 +26,6 @@ export function proxy(request: NextRequest) {
   const authToken = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
 
   const isProtectedRoute = isRouteMatch(pathname, protectedRoutes);
-  const isGuestRoute = isRouteMatch(pathname, guestRoutes);
 
   if (isProtectedRoute && !authToken) {
     const loginUrl = new URL("/login", request.url);

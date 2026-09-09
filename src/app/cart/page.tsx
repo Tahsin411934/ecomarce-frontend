@@ -9,6 +9,7 @@ import {
   selectCartItems, selectCartCount, selectCartTotal, selectShippingTotal, selectGrandTotal,
   removeFromCart, updateQuantity, clearCart,
 } from "@/lib/features/cart/cartSlice";
+import { useSyncDeliveryCharges } from "@/hooks/useSyncDeliveryCharges";
 import { trackViewCart } from "@/lib/gtm";
 
 export default function CartPage() {
@@ -20,6 +21,10 @@ export default function CartPage() {
   const shippingCost = useAppSelector(selectShippingTotal);
   const grandTotal = useAppSelector(selectGrandTotal);
   const [promoCode, setPromoCode] = useState("");
+
+  // Pull the LIVE per-product delivery charges from the backend so the
+  // shipping row never shows stale values (e.g. after an admin change).
+  useSyncDeliveryCharges();
 
   // GTM: Track view cart
   useEffect(() => {

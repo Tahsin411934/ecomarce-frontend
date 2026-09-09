@@ -134,6 +134,21 @@ const cartSlice = createSlice({
       }
       saveCart(state.items);
     },
+    // Refresh per-item delivery charges with the LIVE backend values (matched
+    // by variant_id) — used after a cart sync so an admin's delivery-charge
+    // change is reflected even for items already sitting in localStorage.
+    updateDeliveryCharges(
+      state,
+      action: PayloadAction<Array<{ variant_id: number; delivery_charge: number }>>
+    ) {
+      for (const upd of action.payload) {
+        const item = state.items.find((i) => i.variant_id === upd.variant_id);
+        if (item) {
+          item.delivery_charge = upd.delivery_charge;
+        }
+      }
+      saveCart(state.items);
+    },
     clearCart(state) {
       state.items = [];
       saveCart(state.items);
@@ -159,6 +174,7 @@ export const {
   addToCartWithQuantity,
   removeFromCart,
   updateQuantity,
+  updateDeliveryCharges,
   clearCart,
   setCartItems,
   toggleCart,
