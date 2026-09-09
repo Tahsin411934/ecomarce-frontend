@@ -140,7 +140,9 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
           </CarouselContent>
 
           {/* Dot indicators */}
-          <CarouselDots className="mt-4" />
+          <div className="mt-2 min-h-2">
+            <CarouselDots />
+          </div>
         </Carousel>
       </div>
     </section>
