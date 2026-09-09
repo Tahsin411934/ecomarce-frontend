@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingCart, Minus, Plus, Trash2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
-  selectCartItems, selectCartCount, selectCartTotal,
+  selectCartItems, selectCartCount, selectCartTotal, selectShippingTotal, selectGrandTotal,
   removeFromCart, updateQuantity, clearCart,
 } from "@/lib/features/cart/cartSlice";
 import { trackViewCart } from "@/lib/gtm";
@@ -17,6 +17,8 @@ export default function CartPage() {
   const items = useAppSelector(selectCartItems);
   const count = useAppSelector(selectCartCount);
   const total = useAppSelector(selectCartTotal);
+  const shippingCost = useAppSelector(selectShippingTotal);
+  const grandTotal = useAppSelector(selectGrandTotal);
   const [promoCode, setPromoCode] = useState("");
 
   // GTM: Track view cart
@@ -132,7 +134,9 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Shipping</span>
-                  <span className="font-medium text-[var(--color-primary)]">Free</span>
+                  <span className="font-medium text-[var(--color-primary)]">
+                    {shippingCost === 0 ? "Free" : `৳${shippingCost.toLocaleString("en-BD")}`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Tax</span>
@@ -141,7 +145,7 @@ export default function CartPage() {
                 <hr className="border-gray-100" />
                 <div className="flex justify-between">
                   <span className="font-bold text-gray-900">Total</span>
-                  <span className="text-xl font-bold text-[var(--color-primary)]">৳{total.toLocaleString("en-BD")}</span>
+                  <span className="text-xl font-bold text-[var(--color-primary)]">৳{grandTotal.toLocaleString("en-BD")}</span>
                 </div>
               </div>
 

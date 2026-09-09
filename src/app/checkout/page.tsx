@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { selectCartItems, selectCartTotal, clearCart } from "@/lib/features/cart/cartSlice";
+import { selectCartItems, selectCartTotal, selectShippingTotal, clearCart } from "@/lib/features/cart/cartSlice";
 import { checkoutApi } from "@/services/cart.service";
 import { trackBeginCheckout, trackPurchase } from "@/lib/gtm";
 
@@ -23,7 +23,9 @@ export default function CheckoutPage() {
   const [deliveryPhone, setDeliveryPhone] = useState("");
   const [deliveryNotes, setDeliveryNotes] = useState("");
 
-  const shippingCost = total >= 99 ? 0 : 10;
+  // Shipping = the highest product delivery charge in the cart, taken once
+  // per order (one parcel = one charge) — the same rule the backend applies.
+  const shippingCost = useAppSelector(selectShippingTotal);
   const grandTotal = total + shippingCost;
 
   const handleCheckout = async () => {

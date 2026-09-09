@@ -215,6 +215,7 @@ export default function ProductDetailClient({
         variant_name: selectedVariant?.name,
         variant_option_id: selectedOption?.id,
         stock: stockCount,
+        delivery_charge: product.delivery_charge,
       })
     );
 

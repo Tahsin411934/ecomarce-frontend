@@ -129,6 +129,7 @@ export default function QuickAddModal({ product, triggerLabel = "Add to Cart", d
       variant_id: selectedVariant?.id,
       variant_name: selectedVariant?.name,
       stock: stockCount,
+      delivery_charge: detail?.delivery_charge,
     };
 
     if (quantity > 1) {

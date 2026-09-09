@@ -12,7 +12,16 @@ export interface CartItem {
   variant_option_id?: number;
   quantity: number;
   stock: number;
+  /** Product-level delivery charge (৳). Missing values fall back to DEFAULT_DELIVERY_CHARGE. */
+  delivery_charge?: number;
 }
+
+/**
+ * Must stay in sync with Product::DEFAULT_DELIVERY_CHARGE (৳120) on the
+ * Laravel backend — used when a cart item has no stored charge (e.g. legacy
+ * localStorage carts saved before the delivery-charge feature existed).
+ */
+export const DEFAULT_DELIVERY_CHARGE = 120;
 
 interface CartState {
   items: CartItem[];
@@ -162,6 +171,15 @@ export const selectCartCount = (state: { cart: CartState }) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 export const selectCartTotal = (state: { cart: CartState }) =>
   state.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+// Shipping = the highest product delivery charge in the cart, taken ONCE per
+// order (one parcel = one charge) — mirrors the backend DeliveryChargeService.
+export const selectShippingTotal = (state: { cart: CartState }) =>
+  state.cart.items.reduce(
+    (max, item) => Math.max(max, item.delivery_charge ?? DEFAULT_DELIVERY_CHARGE),
+    0
+  );
+export const selectGrandTotal = (state: { cart: CartState }) =>
+  selectCartTotal(state) + selectShippingTotal(state);
 export const selectCartOpen = (state: { cart: CartState }) => state.cart.isOpen;
 export const selectAnimatingItem = (state: { cart: CartState }) => state.cart.animatingItem;
 

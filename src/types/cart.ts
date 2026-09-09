@@ -11,6 +11,8 @@ export interface CartItemData {
   quantity: number;
   stock: number;
   line_total: number;
+  /** Product-level delivery charge (৳) returned by the backend my-cart API. */
+  delivery_charge?: number;
 }
 
 export interface CartResponse {
@@ -21,6 +23,9 @@ export interface CartResponse {
     items: CartItemData[];
     total: number;
     item_count: number;
+    subtotal?: number;
+    shipping_total?: number;
+    grand_total?: number;
   };
 }
 

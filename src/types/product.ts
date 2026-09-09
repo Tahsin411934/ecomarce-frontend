@@ -21,6 +21,8 @@ export interface ProductListItem {
   discount_amount?: number;
   /** Whether the product currently has a discount. */
   has_discount?: boolean;
+  /** Product-level delivery charge (৳) — the highest one in the cart becomes the shipping charge. */
+  delivery_charge?: number;
   product_type: string;
   stock_status?: string;
   rating?: number;
@@ -75,6 +77,8 @@ export interface ProductDetailData {
   seo_title: string | null;
   seo_description: string | null;
   published_at: string | null;
+  /** Product-level delivery charge (৳) — the highest one in the cart becomes the shipping charge. */
+  delivery_charge?: number;
   price_range: {
     min: number;
     max: number;

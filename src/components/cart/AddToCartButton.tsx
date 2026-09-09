@@ -16,6 +16,7 @@ interface AddToCartButtonProps {
     variant_id?: number;
     variant_option_id?: number;
     variant_name?: string;
+    delivery_charge?: number;
   };
   variant?: "icon" | "default" | "full";
   quantity?: number;
@@ -46,6 +47,7 @@ export default function AddToCartButton({
       variant_option_id: product.variant_option_id,
       variant_name: product.variant_name,
       stock: product.stock || 99,
+      delivery_charge: product.delivery_charge,
     };
 
     if (quantity > 1) {
