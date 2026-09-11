@@ -208,7 +208,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="canonical" href={SITE_URL} />
         <meta name="geo.region" content="BD" />
         <meta name="geo.placename" content="Bangladesh" />
         <meta name="theme-color" content={primaryColor} />
