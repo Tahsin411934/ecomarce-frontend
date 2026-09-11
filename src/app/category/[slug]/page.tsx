@@ -10,7 +10,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  
+  const canonical = `/category/${slug}`;
 
   try {
     const data = await categoryProductsService.getBySlug(slug, { per_page: 1 });
@@ -22,11 +22,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description:
         category.description ||
         `Shop the best ${category.name} products at OneHaatbd. Premium quality, unbeatable prices, fast delivery.`,
+      alternates: {
+        canonical,
+      },
       openGraph: {
         title: `${category.name} | OneHaatbd`,
         description:
           category.description ||
           `Shop the best ${category.name} products at OneHaatbd.`,
+        url: canonical,
         images: category.image ? [{ url: category.image, alt: category.name }] : [],
       },
     };
@@ -34,6 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Category | OneHaatbd",
       description: "Browse our product categories.",
+      alternates: {
+        canonical,
+      },
     };
   }
 }
