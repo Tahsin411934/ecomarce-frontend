@@ -3,6 +3,7 @@ import { categoryService } from "@/services/category.service";
 import CategoryProductsPage from "@/components/category/CategoryProductsPage";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ApiError } from "@/lib/api";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -70,8 +71,10 @@ export default async function CategoryPage({ params }: Props) {
     pageData = await categoryProductsService.getBySlug(slug, {
       per_page: 24,
     });
-  } catch {
-    notFound();
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) notFound();
+    // Temporary backend failures must not mark an existing category noindex.
+    throw error;
   }
 
   return (
