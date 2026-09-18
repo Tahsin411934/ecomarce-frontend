@@ -16,7 +16,7 @@ export const productService = {
 
     // Raw payload: { status, message, data: { query, items, suggestion } } —
     // normalize items into the data array the UI consumes.
-    const res = await api<ApiEnvelope<ProductSearchResult>>(`/products/search?${params.toString()}`, {
+    const res = await api<ApiEnvelope<ProductSearchResult>>(`/storefront/products/search?${params.toString()}`, {
       revalidate: 0,
     });
     return normalizeApiList<ProductSearchResult>(res);

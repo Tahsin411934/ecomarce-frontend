@@ -12,6 +12,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import FloatingCartButton from "@/components/cart/FloatingCartButton";
 import FloatingPartnerButton from "@/components/partner/FloatingPartnerButton";
 import { normalizeAssetUrl } from "@/lib/asset-url";
+import { getRequestOrigin } from "@/lib/storefront-host";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,8 +38,13 @@ export const viewport: Viewport = {
   themeColor: "var(--color-primary)",
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+export async function generateMetadata(): Promise<Metadata> {
+  // Multi-tenant: canonical/OG URLs must be rooted at the visitor's storefront
+  // host (store-a.onehaatbd.com), not the central domain.
+  const siteUrl = (await getRequestOrigin()) ?? SITE_URL;
+
+  return {
+    metadataBase: new URL(siteUrl),
   title: {
     default: `${SITE_NAME} - Premium Online Shopping in Bangladesh | Best Prices & Fast Delivery`,
     template: `%s | ${SITE_NAME}`,
@@ -71,10 +77,10 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
     description: SITE_DESCRIPTION,
-    url: SITE_URL,
+    url: siteUrl,
     images: [
       {
-        url: `${SITE_URL}/og-image.jpg`,
+        url: `${siteUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
@@ -85,7 +91,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} - Premium Online Shopping in Bangladesh`,
     description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/og-image.jpg`],
+    images: [`${siteUrl}/og-image.jpg`],
   },
   icons: {
     icon: [{ url: "/favicon.ico", sizes: "any" }],
@@ -103,7 +109,8 @@ export const metadata: Metadata = {
     // google: "your-google-verification-code",
     // other: { "msvalidate.01": "your-bing-verification-code" },
   },
-};
+  };
+}
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   let primaryColor = "var(--color-primary)";
@@ -144,15 +151,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     }
   } catch {}
 
+  // Multi-tenant: JSON-LD structured data must reference the storefront the
+  // visitor is actually on, not the central domain.
+  const siteUrl = (await getRequestOrigin()) ?? SITE_URL;
+
   const logoUrl = siteLogo
-    ? normalizeAssetUrl(siteLogo) || `${SITE_URL}/og-image.jpg`
-    : `${SITE_URL}/og-image.jpg`;
+    ? normalizeAssetUrl(siteLogo) || `${siteUrl}/og-image.jpg`
+    : `${siteUrl}/og-image.jpg`;
 
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: siteName,
-    url: SITE_URL,
+    url: siteUrl,
     logo: logoUrl,
     description: siteDescription,
     ...(email ? { email } : {}),
@@ -165,14 +176,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteName,
-    url: SITE_URL,
+    url: siteUrl,
     description: siteDescription,
     inLanguage: "en-US",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+        urlTemplate: `${siteUrl}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -182,7 +193,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     "@context": "https://schema.org",
     "@type": "OnlineStore",
     name: siteName,
-    url: SITE_URL,
+    url: siteUrl,
     description: siteDescription,
     image: logoUrl,
     ...(phone ? { telephone: phone } : {}),

@@ -24,7 +24,7 @@ export const subnavbarService = {
     if (params?.sort) query.set("sort", params.sort);
 
     const qs = query.toString();
-    const endpoint = `/subnavbar/${slug}/products${qs ? `?${qs}` : ""}`;
+    const endpoint = `/storefront/subnavbar/${slug}/products${qs ? `?${qs}` : ""}`;
 
     const res = await api<SubnavbarProductsResponse>(endpoint, {
       revalidate: REVALIDATE.SUBNAVBAR,

@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { buildApiUrl } from "@/lib/api-url";
 
 export type ProductRequestFormState = {
@@ -29,9 +30,17 @@ export async function submitProductRequest(
       body.append("product_image", imageFile);
     }
 
-    const response = await fetch(buildApiUrl("/api/v1/product-requests"), {
+    // Multi-tenant: stamp the request with the storefront it was submitted
+    // from so the backend stores the enquiry under the right store.
+    const headerList = await headers();
+    const storefrontHost = (
+      headerList.get("x-store-host") ?? headerList.get("host")
+    )?.trim();
+
+    const response = await fetch(buildApiUrl("/api/v1/storefront/product-requests"), {
       method: "POST",
       body,
+      ...(storefrontHost ? { headers: { "X-Store-Host": storefrontHost } } : {}),
     });
 
     const data = await response.json();

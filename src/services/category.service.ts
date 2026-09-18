@@ -7,7 +7,7 @@ export { type Category };
 export const categoryService = {
   async getAll(): Promise<CategoryResponse> {
     // Raw payload: { status, message, data: { items: Category[] } } — normalize.
-    const res = await api<ApiEnvelope<Category>>("/categories", {
+    const res = await api<ApiEnvelope<Category>>("/storefront/categories", {
       revalidate: REVALIDATE.CATEGORY,
       tags: ["categories"],
     });
@@ -16,7 +16,7 @@ export const categoryService = {
 
   async getBySlug(slug: string): Promise<SingleCategoryResponse> {
     // Raw payload: { status, message, data: Category } — map status → success.
-    const res = await api<ApiEnvelope<Category>>(`/categories/${slug}`, {
+    const res = await api<ApiEnvelope<Category>>(`/storefront/categories/${slug}`, {
       revalidate: REVALIDATE.CATEGORY,
       tags: [`category-${slug}`],
     });

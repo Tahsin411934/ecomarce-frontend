@@ -7,7 +7,7 @@ export { type NavbarItem };
 export const navbarService = {
   async getAll(): Promise<NavbarResponse> {
     // Raw payload: { status, message, data: { items: NavbarItem[] } } — normalize.
-    const res = await api<ApiEnvelope<NavbarItem>>("/navbar-items", {
+    const res = await api<ApiEnvelope<NavbarItem>>("/storefront/navbar-items", {
       revalidate: REVALIDATE.NAVBAR,
       tags: ["navbar"],
     });

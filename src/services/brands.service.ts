@@ -10,7 +10,7 @@ export const brandsService = {
     query.set("page", String(params?.page || 1));
     if (params?.search) query.set("q", params.search);
 
-    const res = await api<BrandsRawResponse>(`/brands?${query.toString()}`, {
+    const res = await api<BrandsRawResponse>(`/storefront/brands?${query.toString()}`, {
       cache: "no-store",
     });
     // Raw payload: { status, message, data: { items: Brand[], meta } } — unwrap.

@@ -8,7 +8,7 @@ export const bannerService = {
   async getAll(): Promise<BannerResponse> {
     // Raw payload: { status, message, data: { items: Banner[] } } — normalize
     // to the frontend's { success, data } shape.
-    const res = await api<ApiEnvelope<Banner>>("/banners", {
+    const res = await api<ApiEnvelope<Banner>>("/storefront/banners", {
       revalidate: REVALIDATE.BANNER,
       tags: ["banners"],
     });

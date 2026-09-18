@@ -1,8 +1,13 @@
 import type { MetadataRoute } from "next";
+import { getRequestOrigin } from "@/lib/storefront-host";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/\/+$/, "");
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  // Multi-tenant: each storefront advertises its own sitemap URL
+  // (store-a.onehaatbd.com/robots.txt → store-a.onehaatbd.com/sitemap.xml).
+  const origin = (await getRequestOrigin()) ?? SITE_URL;
+
   return {
     rules: [
       {
@@ -31,6 +36,6 @@ export default function robots(): MetadataRoute.Robots {
     ],
     // The canonical sitemap index (explicit route handler) links static.xml
     // and every products-N.xml chunk.
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: `${origin}/sitemap.xml`,
   };
 }

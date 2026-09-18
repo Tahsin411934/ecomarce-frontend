@@ -15,7 +15,7 @@ export const homeService = {
     if (params?.limit_categories) query.set("limit_categories", String(params.limit_categories));
     if (params?.limit_products) query.set("limit_products", String(params.limit_products));
     const qs = query.toString();
-    const endpoint = `/home/products-by-category${qs ? `?${qs}` : ""}`;
+    const endpoint = `/storefront/home/products-by-category${qs ? `?${qs}` : ""}`;
     const res = await api<HomeApiResponse>(endpoint, {
       revalidate: REVALIDATE.HOME_PAGE,
       tags: ["home-page"],

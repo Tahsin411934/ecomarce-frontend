@@ -1,5 +1,6 @@
-import { buildApiUrl } from "@/lib/api-url";
+import { buildApiUrl, isStorefrontEndpoint } from "@/lib/api-url";
 import { rewriteLegacyAssetHosts } from "@/lib/asset-url";
+import { getStorefrontHost } from "@/lib/storefront-host";
 
 interface ApiOptions extends RequestInit {
   revalidate?: number;
@@ -89,8 +90,23 @@ export async function api<T>(
     ...(fetchOptions.headers as Record<string, string>),
   };
 
+  // Multi-tenant storefront endpoints need the visitor's hostname so the
+  // backend can resolve the store. The host is ALSO appended as a `sh` query
+  // param: Next.js caches fetches by URL (not headers), so without it two
+  // tenants hitting the same endpoint could share one cached payload.
+  let targetEndpoint = endpoint;
+  if (isStorefrontEndpoint(endpoint)) {
+    const host = await getStorefrontHost();
+    if (host) {
+      headers["X-Store-Host"] = host;
+      targetEndpoint = endpoint.includes("?")
+        ? `${endpoint}&sh=${encodeURIComponent(host)}`
+        : `${endpoint}?sh=${encodeURIComponent(host)}`;
+    }
+  }
+
   const shouldBypassCache = revalidate === 0 || fetchOptions.cache === "no-store";
-  const response = await fetch(buildApiUrl(endpoint), {
+  const response = await fetch(buildApiUrl(targetEndpoint), {
     ...fetchOptions,
     credentials: "include",
     headers,

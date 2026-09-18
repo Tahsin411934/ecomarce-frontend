@@ -7,7 +7,7 @@ type SettingsPayload = Record<string, string | null>;
 export const settingsService = {
   async getAll(): Promise<SettingsResponse> {
     // Raw payload: { status, message, data: { ...settings } } — map status → success.
-    const res = await api<ApiEnvelope<SettingsPayload>>("/settings", {
+    const res = await api<ApiEnvelope<SettingsPayload>>("/storefront/settings", {
       revalidate: REVALIDATE.SETTINGS,
       tags: ["settings"],
     });

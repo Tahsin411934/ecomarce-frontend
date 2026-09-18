@@ -34,7 +34,7 @@ export const categoryProductsService = {
     if (params?.refresh) query.set("refresh", "1");
 
     const qs = query.toString();
-    const endpoint = `/categories/${slug}/products${qs ? `?${qs}` : ""}`;
+    const endpoint = `/storefront/categories/${slug}/products${qs ? `?${qs}` : ""}`;
 
     const res = await api<CategoryProductsRawResponse>(endpoint, {
       // refresh = 1 (client-side filter/sort) always hits the API fresh;

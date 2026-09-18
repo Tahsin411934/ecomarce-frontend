@@ -3,6 +3,7 @@ import { categoryProductsService } from "@/services/category-products.service";
 import { categoryService } from "@/services/category.service";
 import { navbarService } from "@/services/navbar.service";
 import { sitemapService } from "@/services/sitemap.service";
+import { originFromHeaderGet } from "@/lib/storefront-host";
 import type { Category } from "@/types/category";
 
 // ---------------------------------------------------------------------------
@@ -19,6 +20,16 @@ import type { Category } from "@/types/category";
 // ---------------------------------------------------------------------------
 
 const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://onehaatbd.com").replace(/[\/]+$/, "");
+
+/**
+ * Per-tenant base URL for sitemap URLs, derived from the crawler request's
+ * host headers. Multi-tenant: store-a.onehaatbd.com/sitemap.xml must list
+ * store-a URLs, never the central domain's. Falls back to the configured
+ * site URL when no host header exists.
+ */
+export function baseUrlFromRequest(request: Request): string {
+  return originFromHeaderGet((name) => request.headers.get(name)) ?? BASE_URL;
+}
 
 // One file may hold at most 50 000 URLs / 50 MB. 25k keeps each XML light
 // and the Laravel page query cheap. The same number is passed as the backend
@@ -52,10 +63,11 @@ export function page(
     lastModified?: Date;
     changeFrequency?: SitemapEntry["changeFrequency"];
     priority?: number;
-  } = {}
+  } = {},
+  baseUrl: string = BASE_URL
 ): SitemapEntry {
   return {
-    url: `${BASE_URL}${path === "/" ? "" : path}`,
+    url: `${baseUrl}${path === "/" ? "" : path}`,
     ...(lastModified ? { lastModified } : {}),
     ...(changeFrequency ? { changeFrequency } : {}),
     ...(priority !== undefined ? { priority } : {}),
@@ -128,7 +140,7 @@ async function getActiveCampaigns(): Promise<string[]> {
 }
 
 // Every non-product URL: home, the category tree, sub-navigation and campaign pages.
-export async function staticPages(): Promise<SitemapEntry[]> {
+export async function staticPages(baseUrl: string = BASE_URL): Promise<SitemapEntry[]> {
   let categories: Category[] = [];
   try {
     categories = (await categoryService.getAll()).data;
@@ -145,21 +157,21 @@ export async function staticPages(): Promise<SitemapEntry[]> {
   // login, orders, wishlist...) are deliberately absent — they are also
   // disallowed in robots.txt and would only waste crawl budget.
   const staticEntries: SitemapEntry[] = [
-    page("/", { changeFrequency: "daily", priority: 1.0 }),
-    page("/categories", { changeFrequency: "weekly", priority: 0.9 }),
-    page("/product-request", { changeFrequency: "monthly", priority: 0.5 }),
+    page("/", { changeFrequency: "daily", priority: 1.0 }, baseUrl),
+    page("/categories", { changeFrequency: "weekly", priority: 0.9 }, baseUrl),
+    page("/product-request", { changeFrequency: "monthly", priority: 0.5 }, baseUrl),
   ];
 
   const categoryPages = categories.map((cat) =>
-    page(`/category/${cat.slug}`, { changeFrequency: "weekly", priority: 0.8 })
+    page(`/category/${cat.slug}`, { changeFrequency: "weekly", priority: 0.8 }, baseUrl)
   );
 
   const subnavbarPages = subnavbarSlugs.map((slug) =>
-    page(`/subnavbar/${slug}`, { changeFrequency: "weekly", priority: 0.7 })
+    page(`/subnavbar/${slug}`, { changeFrequency: "weekly", priority: 0.7 }, baseUrl)
   );
 
   const campaignPages = campaigns.map((campaign) =>
-    page(`/campaigns/${campaign}`, { changeFrequency: "weekly", priority: 0.6 })
+    page(`/campaigns/${campaign}`, { changeFrequency: "weekly", priority: 0.6 }, baseUrl)
   );
 
   return [...staticEntries, ...categoryPages, ...subnavbarPages, ...campaignPages];
@@ -168,7 +180,7 @@ export async function staticPages(): Promise<SitemapEntry[]> {
 // ---- Products (chunked via the dedicated Laravel sitemap feed) ----
 // Primary path: one page of { slug, updated_at } from the backend, already
 // filtered to indexable rows; the Laravel endpoint handles SEO filtering.
-export async function getProductChunk(index: number): Promise<SitemapEntry[]> {
+export async function getProductChunk(index: number, baseUrl: string = BASE_URL): Promise<SitemapEntry[]> {
   try {
     const products = await sitemapService.getProducts(index + 1, PRODUCTS_PER_CHUNK);
     const entries = products
@@ -178,7 +190,7 @@ export async function getProductChunk(index: number): Promise<SitemapEntry[]> {
           lastModified: p.updated_at ? new Date(p.updated_at) : undefined,
           changeFrequency: "weekly",
           priority: 0.7,
-        })
+        }, baseUrl)
       );
     if (entries.length > 0) return entries;
     // Successful but empty page (count changed between index and chunk calls)
@@ -187,16 +199,16 @@ export async function getProductChunk(index: number): Promise<SitemapEntry[]> {
     // Dedicated sitemap endpoint(s) not deployed / unreachable yet.
   }
 
-  return getFallbackProductChunk(index);
+  return getFallbackProductChunk(index, baseUrl);
 }
 
 // Degraded path: derive slugs from category listings (works without the new
 // Laravel endpoints, but is heavier). Chunk 0 is expected to carry the data.
-async function getFallbackProductChunk(index: number): Promise<SitemapEntry[]> {
+async function getFallbackProductChunk(index: number, baseUrl: string = BASE_URL): Promise<SitemapEntry[]> {
   const slugs = await aggregateProductSlugsFromCategories();
   return slugs
     .slice(index * PRODUCTS_PER_CHUNK, (index + 1) * PRODUCTS_PER_CHUNK)
-    .map((slug) => page(`/product/${slug}`, { changeFrequency: "weekly", priority: 0.7 }));
+    .map((slug) => page(`/product/${slug}`, { changeFrequency: "weekly", priority: 0.7 }, baseUrl));
 }
 
 // All published product slugs gathered from each category listing, deduplicated
@@ -250,11 +262,11 @@ export async function getProductChunkCount(): Promise<number> {
 }
 
 /** Serialize the XML sitemapindex (the canonical /sitemap.xml) listing every chunk file. */
-export async function sitemapIndexXml(): Promise<string> {
+export async function sitemapIndexXml(baseUrl: string = BASE_URL): Promise<string> {
   const chunkCount = await getProductChunkCount();
-  const locations: string[] = [`${BASE_URL}/sitemap/static.xml`];
+  const locations: string[] = [`${baseUrl}/sitemap/static.xml`];
   for (let i = 0; i < chunkCount; i += 1) {
-    locations.push(`${BASE_URL}/sitemap/products-${i}.xml`);
+    locations.push(`${baseUrl}/sitemap/products-${i}.xml`);
   }
 
   const body = locations

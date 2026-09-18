@@ -1,9 +1,9 @@
-import { getProductChunk, sortEntries, xmlUrlset } from "@/lib/sitemap-core";
+import { baseUrlFromRequest, getProductChunk, sortEntries, xmlUrlset } from "@/lib/sitemap-core";
 import type { NextRequest } from "next/server";
 
-// ISR on every sub-sitemap: rebuilt in the background hourly so each crawler
-// hit is served from cache instead of hitting the Laravel API.
-export const revalidate = 3600;
+// Multi-tenant: base URLs come from the crawler's host headers, so this route
+// is fully dynamic (the Laravel data behind it is cached per store for 1h).
+export const dynamic = "force-dynamic";
 
 const XML_HEADERS: Record<string, string> = {
   "Content-Type": "application/xml; charset=utf-8",
@@ -16,7 +16,7 @@ const XML_HEADERS: Record<string, string> = {
  * both dev (Turbopack) and production builds.
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
   const { id } = await params;
@@ -24,7 +24,7 @@ export async function GET(
     return new Response("Not Found", { status: 404, headers: XML_HEADERS });
   }
 
-  const entries = sortEntries(await getProductChunk(parseInt(id, 10)));
+  const entries = sortEntries(await getProductChunk(parseInt(id, 10), baseUrlFromRequest(request)));
   // A chunk the index did not advertise (e.g. the total shrank between the
   // index and this fetch) must not expose an empty urlset — respond 404 so
   // crawlers drop it instead of recording an invalid sitemap.

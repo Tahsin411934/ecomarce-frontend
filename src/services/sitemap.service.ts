@@ -37,7 +37,7 @@ export interface SitemapProductsData {
 export const sitemapService = {
   /** Total number of indexable (active + published + not-deleted) products. */
   async getProductCount(): Promise<SitemapCountData> {
-    const res = await api<ApiEnvelope<SitemapCountData>>("/sitemap/products-count", {
+    const res = await api<ApiEnvelope<SitemapCountData>>("/storefront/sitemap/products-count", {
       revalidate: REVALIDATE.SITEMAP,
       tags: ["sitemap"],
     });
@@ -56,7 +56,7 @@ export const sitemapService = {
    */
   async getProducts(page: number, limit = 25_000): Promise<SitemapProductItem[]> {
     const res = await api<ApiEnvelope<SitemapProductsData>>(
-      `/sitemap/products?page=${page}&limit=${limit}`,
+      `/storefront/sitemap/products?page=${page}&limit=${limit}`,
       {
         revalidate: REVALIDATE.SITEMAP,
         tags: [`sitemap-products-${page}`],

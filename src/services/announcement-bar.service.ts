@@ -7,7 +7,7 @@ export { type AnnouncementBar };
 export const announcementBarService = {
   async getAll(): Promise<AnnouncementBarResponse> {
     // Raw payload: { status, message, data: { items: AnnouncementBar[] } } — normalize.
-    const res = await api<ApiEnvelope<AnnouncementBar>>("/announcement-bars", {
+    const res = await api<ApiEnvelope<AnnouncementBar>>("/storefront/announcement-bars", {
       revalidate: REVALIDATE.ANNOUNCEMENT,
       tags: ["announcement-bar"],
     });

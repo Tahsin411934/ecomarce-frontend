@@ -1,4 +1,5 @@
 import type { ProductRequestPayload, ProductRequestResponse } from "@/types/product-request";
+import { getClientStorefrontHost } from "@/lib/storefront-host";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://admin.onehaatbd.com/api/v1";
 
@@ -16,10 +17,14 @@ export async function submitProductRequest(
   if (data.expected_price) formData.append("expected_price", String(data.expected_price));
   if (data.notes) formData.append("notes", data.notes);
 
-  const response = await fetch(`${API_BASE_URL}/product-requests`, {
+  const response = await fetch(`${API_BASE_URL}/storefront/product-requests`, {
     method: "POST",
     body: formData,
     credentials: "include",
+    headers: {
+      // Multi-tenant: tell the backend which storefront submitted the request.
+      "X-Store-Host": getClientStorefrontHost(),
+    },
   });
 
   const result = await response.json();

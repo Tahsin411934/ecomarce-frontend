@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { buildApiUrl } from "@/lib/api-url";
+import { buildApiUrl, isStorefrontEndpoint } from "@/lib/api-url";
 
 /**
  * Proxy a request to a protected backend endpoint.
@@ -16,6 +16,9 @@ import { buildApiUrl } from "@/lib/api-url";
  * Guest endpoints (guest checkout) set `allowGuest: true` so they can be
  * forwarded without a session token — the `Authorization` header is simply
  * omitted for those requests.
+ *
+ * Multi-tenant storefront endpoints additionally receive the visitor's
+ * storefront hostname via `X-Store-Host` so the backend can resolve the store.
  */
 export async function proxyApiRequest(
   endpoint: string,
@@ -36,13 +39,24 @@ export async function proxyApiRequest(
   const body =
     method === "GET" || method === "HEAD" ? undefined : await request!.text();
 
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(contentType ? { "Content-Type": contentType } : {}),
+  };
+
+  if (isStorefrontEndpoint(endpoint) && request) {
+    const host = (
+      request.headers.get("x-store-host") ?? request.headers.get("host")
+    )?.trim();
+    if (host) {
+      headers["X-Store-Host"] = host;
+    }
+  }
+
   const response = await fetch(buildApiUrl(endpoint), {
     method,
-    headers: {
-      Accept: "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(contentType ? { "Content-Type": contentType } : {}),
-    },
+    headers,
     body,
     cache: "no-store",
   });
