@@ -19,23 +19,23 @@
  */
 export const REVALIDATE = {
   /** Homepage sections (products by category, hero, campaigns). */
-  HOME_PAGE: 300, // 5 minutes
+  HOME_PAGE: 0, // 5 minutes
   /** Product detail page + product reviews. */
-  PRODUCT: 60, // 1 minute
+  PRODUCT: 0, // 1 minute
   /** Category product list + category info (nav scroll too). */
-  CATEGORY: 120, // 2 minutes
+  CATEGORY: 0, // 2 minutes
   /** Campaign detail page + active campaign list on home. */
-  CAMPAIGN: 300, // 5 minutes
+  CAMPAIGN: 0, // 5 minutes
   /** Subnav product list. */
-  SUBNAVBAR: 120, // 2 minutes
+  SUBNAVBAR: 0, // 2 minutes
   /** Homepage hero banners & announcement bar. */
-  BANNER: 60, // 1 minute
+  BANNER: 0, // 1 minute
   /** Announcement bar. */
-  ANNOUNCEMENT: 60, // 1 minute
+  ANNOUNCEMENT: 0, // 1 minute
   /** Navigation bar items. */
-  NAVBAR: 60, // 1 minute
+  NAVBAR: 0, // 1 minute
   /** Site settings (footer, theme, GTM). */
-  SETTINGS: 3600, // 1 hour
+  SETTINGS: 0, // 1 hour
   /** Sitemap feed from backend (products-count / products chunk). */
-  SITEMAP: 3600, // 1 hour — matches the /sitemap.xml ISR window
+  SITEMAP: 0, // 1 hour — matches the /sitemap.xml ISR window
 } as const;
