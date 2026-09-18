@@ -30,7 +30,7 @@ export type Campaign = {
 
 export const campaignService = {
   getActive: async (): Promise<Campaign[]> =>
-    (await api<{ data: Campaign[] }>("/campaigns", {
+    (await api<{ data: Campaign[] }>("/storefront/campaigns", {
       revalidate: REVALIDATE.CAMPAIGN,
       tags: ["campaigns"],
     })).data ?? [],
