@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { buildApiUrl } from "@/lib/api-url";
-import { rewriteLegacyAssetHosts } from "@/lib/asset-url";
+import { api } from "@/lib/api";
 import { REVALIDATE } from "@/config/revalidate";
 import type { Campaign, CampaignProduct } from "@/services/campaign.service";
 import QuickAddCardButton from "@/components/cart/QuickAddCardButton";
@@ -18,15 +17,14 @@ export async function generateMetadata({
   const canonical = `/campaigns/${slug}`;
 
   try {
-    const response = await fetch(buildApiUrl(`/campaigns/${slug}`), {
-      next: { revalidate: REVALIDATE.CAMPAIGN, tags: [`campaign-${slug}`] },
+    // Multi-tenant storefront endpoint: api() sends the visitor's hostname via
+    // X-Store-Host, so only campaigns visible on this storefront resolve — and
+    // cross-store products inside a campaign are already filtered server-side.
+    const { data: campaign } = await api<{ data: Campaign }>(`/storefront/campaigns/${slug}`, {
+      revalidate: REVALIDATE.CAMPAIGN,
+      tags: [`campaign-${slug}`],
     });
 
-    if (!response.ok) throw new Error("Campaign not available");
-
-    const { data: campaign } = rewriteLegacyAssetHosts(
-      (await response.json()) as { data: Campaign }
-    ) as { data: Campaign };
     const description =
       campaign.description || `Shop ${campaign.name} campaign products at OneHaatbd.`;
 
@@ -77,11 +75,20 @@ function discountOf(p: CampaignProduct): number {
 
 export default async function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const response = await fetch(buildApiUrl(`/campaigns/${slug}`), {
-    next: { revalidate: REVALIDATE.CAMPAIGN, tags: [`campaign-${slug}`] },
-  });
 
-  if (!response.ok) {
+  // Multi-tenant storefront endpoint (X-Store-Host auto-attached by api()).
+  let campaign: Campaign | null = null;
+  try {
+    campaign =
+      (await api<{ data: Campaign }>(`/storefront/campaigns/${slug}`, {
+        revalidate: REVALIDATE.CAMPAIGN,
+        tags: [`campaign-${slug}`],
+      })).data ?? null;
+  } catch {
+    campaign = null;
+  }
+
+  if (!campaign) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">Campaign not available</h1>
@@ -91,10 +98,6 @@ export default async function CampaignPage({ params }: { params: Promise<{ slug:
       </div>
     );
   }
-
-  const { data: campaign } = rewriteLegacyAssetHosts(
-    (await response.json()) as { data: Campaign }
-  ) as { data: Campaign };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
