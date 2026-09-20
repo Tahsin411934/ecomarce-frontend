@@ -20,6 +20,7 @@ export const homeService = {
       revalidate: REVALIDATE.HOME_PAGE,
       tags: ["home-page"],
     });
+    console.log("homeService.getHomePageData", res.data);
     return res.data;
   },
 };
