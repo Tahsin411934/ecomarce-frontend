@@ -41,6 +41,13 @@ export async function generateMetadata(): Promise<Metadata> {
   // Multi-tenant: canonical/OG URLs must be rooted at the visitor's storefront
   // host (store-a.onehaatbd.com), not the central domain.
   const siteUrl = (await getRequestOrigin()) ?? SITE_URL;
+  let faviconUrl = `${siteUrl}/favicon.ico`;
+  try {
+    const settingsRes = await settingsService.getAll();
+    if (settingsRes.success && settingsRes.data?.site_favicon) {
+      faviconUrl = normalizeAssetUrl(settingsRes.data.site_favicon) || faviconUrl;
+    }
+  } catch {}
 
   return {
     metadataBase: new URL(siteUrl),
@@ -93,7 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
     images: [`${siteUrl}/og-image.jpg`],
   },
   icons: {
-    icon: [{ url: "/favicon.ico", sizes: "any" }],
+    icon: [{ url: faviconUrl, sizes: "any" }],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.json",
@@ -118,6 +125,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   let siteName = SITE_NAME;
   let siteDescription = SITE_DESCRIPTION;
   let siteLogo: string | null = null;
+  let siteFavicon: string | null = null;
   let phone = "";
   let email = "";
   let address = "";
@@ -135,6 +143,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       if (s.site_name) siteName = s.site_name;
       if (s.site_description) siteDescription = s.site_description;
       if (s.site_logo) siteLogo = s.site_logo;
+      if (s.site_favicon) siteFavicon = s.site_favicon;
       if (s.phone) phone = s.phone;
       if (s.email) email = s.email;
       if (s.address) address = s.address;
@@ -221,6 +230,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
+        {siteFavicon ? <link rel="icon" href={normalizeAssetUrl(siteFavicon) || siteFavicon} /> : null}
         <meta name="msapplication-TileColor" content={primaryColor} />
         <script
           type="application/ld+json"
