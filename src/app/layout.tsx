@@ -12,6 +12,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import FloatingCartButton from "@/components/cart/FloatingCartButton";
 import { normalizeAssetUrl } from "@/lib/asset-url";
 import { getRequestOrigin } from "@/lib/storefront-host";
+import { headers } from "next/headers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -119,6 +120,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const isMissingStore = (await headers()).get("x-store-missing") === "1";
   let primaryColor = "var(--color-primary)";
   let gtmHeaderCode: string | null = null;
   let gtmBodyCode: string | null = null;
@@ -249,6 +251,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         style={{ "--color-primary": primaryColor } as React.CSSProperties}>
         {gtmBodyCode ? <div dangerouslySetInnerHTML={{ __html: gtmBodyCode }} /> : null}
         <StoreProvider>
+          {isMissingStore ? children : <>
           <a href="#main-content"
             className="sr-only focus:not-sr-only focus:absolute focus:z-[9999] focus:top-4 focus:left-4 focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
             Skip to main content
@@ -263,6 +266,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <FloatingCartButton />
           <ToastProvider />
           <ScrollToTop />
+          </>}
         </StoreProvider>
       </body>
     </html>

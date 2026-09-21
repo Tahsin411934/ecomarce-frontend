@@ -101,7 +101,11 @@ export async function proxy(request: NextRequest) {
     if (host && !(await storeRegistered(host))) {
       const notFoundUrl = new URL(STORE_NOT_FOUND_PATH, request.url);
       notFoundUrl.searchParams.set("host", host);
-      const response = NextResponse.rewrite(notFoundUrl);
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("x-store-missing", "1");
+      const response = NextResponse.rewrite(notFoundUrl, {
+        request: { headers: requestHeaders },
+      });
       // Surface the state to the app (layout/components can suppress chrome).
       response.headers.set("x-store-missing", "1");
       response.headers.set("x-store-host", host);
