@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function StoreNotFoundPage() {
   return (
     <main className="flex min-h-[60vh] items-center justify-center px-6 py-16 text-center">
@@ -11,11 +9,14 @@ export default function StoreNotFoundPage() {
           This store is not available
         </h1>
         <p className="mt-3 text-slate-600">
-          The store you are looking for does not exist or is currently unavailable.
+          No store is registered on this subdomain. Would you like to create your own store?
         </p>
-        <Link href="/" className="mt-6 inline-flex rounded-lg bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white">
-          Go to homepage
-        </Link>
+        <a
+          href="https://aftsoftandlimited.com/store-register"
+          className="mt-6 inline-flex rounded-lg bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Create your store
+        </a>
       </div>
     </main>
   );
