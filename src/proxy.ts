@@ -27,7 +27,12 @@ function isRouteMatch(pathname: string, routes: string[]) {
  * of these suffixes are tenant candidates — anything else (the central
  * website itself, localhost, preview hosts) renders normally.
  */
-const STOREFRONT_SUFFIXES = (process.env.NEXT_PUBLIC_STOREFRONT_SUFFIXES || "")
+// Keep a safe production default so the check cannot silently be skipped when
+// the deployment environment forgot to define the public suffixes.
+const STOREFRONT_SUFFIXES = (
+  process.env.NEXT_PUBLIC_STOREFRONT_SUFFIXES ||
+  "aftsoftandlimited.com,onehaatbd.com"
+)
   .split(",")
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);
