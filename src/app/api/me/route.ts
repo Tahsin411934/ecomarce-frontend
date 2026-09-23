@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { buildApiUrl } from "@/lib/api-url";
+import { headers } from "next/headers";
 
 export async function GET() {
   try {
@@ -8,9 +9,15 @@ export async function GET() {
     const token = cookieStore.get("token")?.value;
     if (!token) return NextResponse.json({ success: false, message: "Not authenticated." }, { status: 401 });
 
-    const res = await fetch(buildApiUrl("/api/v1/me"), {
+    const requestHeaders = await headers();
+    const storefrontHost = requestHeaders.get("x-store-host") ?? requestHeaders.get("host");
+    const res = await fetch(buildApiUrl("/storefront/auth/me"), {
       method: "GET",
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        ...(storefrontHost ? { "X-Store-Host": storefrontHost } : {}),
+      },
       cache: "no-store",
     });
 
@@ -24,7 +31,7 @@ export async function GET() {
     // (see src/app/actions/auth.ts apiRequest) — the user therefore sits at
     // `data.data.user`, NOT at the top level. Fall back to a top-level `user`
     // key in case the envelope is ever removed on the backend.
-    const envelope = data as { data?: { user?: unknown }; user?: unknown } | null;
+    const envelope = data as { data?: { customer?: unknown }; customer?: unknown } | null;
     const payload =
       envelope &&
       typeof envelope === "object" &&
@@ -32,7 +39,7 @@ export async function GET() {
       typeof envelope.data === "object"
         ? envelope.data
         : envelope;
-    return NextResponse.json({ status: "success", user: payload?.user ?? null });
+    return NextResponse.json({ status: "success", user: payload?.customer ?? null });
   } catch (err) {
     return NextResponse.json({ success: false, message: "Error fetching user." }, { status: 500 });
   }

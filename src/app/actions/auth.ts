@@ -8,6 +8,7 @@ import type {
   ForgotPasswordFormState,
 } from "@/lib/features/auth/auth.types";
 import { buildApiUrl } from "@/lib/api-url";
+import { getStorefrontHost } from "@/lib/storefront-host";
 
 const TOKEN_COOKIE_NAME = "token";
 
@@ -18,11 +19,13 @@ interface ApiError {
 }
 
 async function apiRequest<T>(path: string, init: RequestInit): Promise<T> {
+  const storefrontHost = await getStorefrontHost();
   const response = await fetch(buildApiUrl(path), {
     ...init,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(storefrontHost ? { "X-Store-Host": storefrontHost } : {}),
       ...(init.headers as Record<string, string>),
     },
     cache: "no-store",
@@ -88,7 +91,7 @@ export async function registerUser(
   formData: FormData
 ): Promise<AuthFormState> {
   try {
-    const data = await apiRequest<{ status: string; message: string; user?: any; token?: string; access_token?: string }>("/api/register", {
+    const data = await apiRequest<{ status: string; message: string; customer?: any; token?: string; access_token?: string }>("/storefront/auth/register", {
       method: "POST",
       body: JSON.stringify({
         first_name: formData.get("first_name"),
@@ -109,7 +112,7 @@ export async function registerUser(
     return {
       success: true,
       message: data.message || "Registration successful.",
-      user: data.user,
+      user: data.customer,
       token,
     };
   } catch (error: any) {
@@ -136,7 +139,7 @@ export async function loginAction(
   formData: FormData
 ): Promise<AuthFormState> {
   try {
-    const data = await apiRequest<{ status: string; message: string; user?: any; token?: string; access_token?: string }>('/login', {
+    const data = await apiRequest<{ status: string; message: string; customer?: any; token?: string; access_token?: string }>('/storefront/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         email: formData.get('email'),
@@ -154,7 +157,7 @@ export async function loginAction(
     return {
       success: true,
       message: data.message || 'Login successful.',
-      user: data.user,
+      user: data.customer,
       token,
     };
   } catch (error: any) {
