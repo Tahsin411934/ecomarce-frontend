@@ -11,13 +11,18 @@ import {
   CarouselDots,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { BannerPlaceholder } from "./StorefrontEmptyState";
 
 interface HeroBannerProps {
   banners: Banner[];
 }
 
 export default function HeroBanner({ banners }: HeroBannerProps) {
-  if (!banners.length) return null;
+  if (!banners.length) return (
+    <section className="w-full bg-gradient-to-br from-green-50 via-white to-green-50" aria-label="Banner setup">
+      <div className="mx-auto max-w-[1400px] md:px-4"><BannerPlaceholder /></div>
+    </section>
+  );
 
   return (
     <section
@@ -43,6 +48,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
           <CarouselContent>
             {banners.map((banner, index) => (
               <CarouselItem key={banner.id}>
+                {!banner.banner_image ? <BannerPlaceholder /> : (
                 <div className="relative flex min-h-[250px] items-center overflow-hidden md:rounded-2xl md:min-h-[500px]">
                   {/* Full Background Image */}
                   {banner.banner_image && (
@@ -135,6 +141,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
                     </div>
                   </div>
                 </div>
+                )}
               </CarouselItem>
             ))}
           </CarouselContent>

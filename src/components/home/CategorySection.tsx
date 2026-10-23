@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import ProductCard from "@/components/ui/ProductCard";
+import { ProductsPlaceholder } from "./StorefrontEmptyState";
 import { type CategorySection as CategorySectionType } from "@/services/home.service";
 import {
   Carousel,
@@ -78,9 +79,7 @@ export default function CategorySection({ category, products }: CategorySectionP
             <CarouselNext className="hidden md:flex -right-4 bg-white border-gray-200 text-gray-600 hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]" />
           </Carousel>
         ) : (
-          <div className="py-12 text-center text-gray-400 text-sm">
-            <p>No products available in this category yet.</p>
-          </div>
+          <ProductsPlaceholder />
         )}
       </div>
     </section>

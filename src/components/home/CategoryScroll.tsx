@@ -7,6 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { type Category } from "@/services/category.service";
+import { CategoriesPlaceholder } from "./StorefrontEmptyState";
 
 interface CategoryScrollProps {
   categories: Category[];
@@ -20,6 +21,8 @@ export default function CategoryScroll({
   useEffect(() => {
     emblaApi?.reInit();
   }, [emblaApi, categories]);
+
+  if (categories.length === 0) return <CategoriesPlaceholder />;
 
   return (
     <section className="w-full py-6" aria-label="Shop by category">

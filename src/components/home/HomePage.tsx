@@ -3,6 +3,7 @@
 import CategorySection from "./CategorySection";
 import CtaSection from "./CtaSection";
 import { type HomeSection } from "@/services/home.service";
+import { CategoryProductsPlaceholder, CtaPlaceholder } from "./StorefrontEmptyState";
 
 interface HomePageProps {
   sections: HomeSection[];
@@ -11,15 +12,16 @@ interface HomePageProps {
 export default function HomePage({ sections }: HomePageProps) {
   if (!sections || sections.length === 0) {
     return (
-      <div className="py-16 text-center text-gray-600">
-        <p className="text-lg font-medium">The homepage is loading or has no sections yet.</p>
-        <p className="mt-2 text-sm">Try refreshing the page or come back shortly.</p>
+      <div className="space-y-12 py-8">
+        <CategoryProductsPlaceholder />
+        <CtaPlaceholder />
       </div>
     );
   }
 
   return (
     <div className="space-y-12 py-8">
+      {!sections.some((section) => section.type === "category_section") && <CategoryProductsPlaceholder />}
       {sections.map((section, index) => {
         if (section.type === "category_section") {
           return (
@@ -40,6 +42,7 @@ export default function HomePage({ sections }: HomePageProps) {
         }
         return null;
       })}
+      {!sections.some((section) => section.type === "cta_section") && <CtaPlaceholder />}
     </div>
   );
 }

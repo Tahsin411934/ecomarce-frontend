@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { type NavbarItem } from "@/services/navbar.service";
 import { type Category } from "@/services/category.service";
+import { DocumentationLink } from "@/components/home/StorefrontEmptyState";
 
 interface NavigationBarProps {
   serverItems: NavbarItem[];
@@ -77,10 +78,10 @@ export default function NavigationBar({
 
   return (
     <nav
-      className="sticky top-0 z-50 hidden border-b border-[#F1F5F9] bg-white lg:block"
+      className={`sticky top-0 z-50 border-b border-[#F1F5F9] bg-white ${navItems.length > 0 ? "hidden lg:block" : ""}`}
       aria-label="Main navigation"
     >
-      <div className="mx-auto flex h-[60px] max-w-[1200px] items-center justify-between px-4">
+      <div className={`mx-auto flex max-w-[1200px] items-center justify-between px-4 ${navItems.length > 0 ? "h-[60px]" : "min-h-[60px] flex-wrap gap-3 py-3"}`}>
         {/* Left: Categories Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -114,22 +115,7 @@ export default function NavigationBar({
                     </Link>
                   </DropdownMenuItem>
                 ))
-              : ["Electronics", "Clothing", "Home & Kitchen", "Sports", "Books", "Toys"].map(
-                  (name) => (
-                    <DropdownMenuItem key={name} asChild>
-                      <Link
-                        href={`/category/${name.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")}`}
-                        className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-[#374151] transition-colors hover:bg-[#F0FDF4] hover:text-[var(--color-primary)]"
-                        role="menuitem"
-                      >
-                        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-xs text-gray-500" aria-hidden="true">
-                          {name.charAt(0)}
-                        </span>
-                        <span>{name}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  )
-                )}
+              : <div className="space-y-2 px-3 py-3 text-sm text-gray-500"><p>Please select a category.</p><DocumentationLink section="categories" /></div>}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link
@@ -145,6 +131,14 @@ export default function NavigationBar({
         </DropdownMenu>
 
         {/* Center: Nav Links - Hover dropdown */}
+        {navItems.length === 0 && (
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-3">
+            <div className="flex gap-2" aria-hidden="true">
+              {Array.from({ length: 4 }, (_, index) => <span key={index} className="h-8 w-14 rounded-md border border-dashed border-gray-300 bg-gray-50 md:w-20" />)}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500"><span>Please add navigation items.</span><DocumentationLink section="navigation" /></div>
+          </div>
+        )}
         <ul className="flex items-center gap-10">
           {navItems.map((item) => {
             const hasChildren = item.children && item.children.length > 0;

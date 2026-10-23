@@ -2,31 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { type AnnouncementBar } from "@/services/announcement-bar.service";
+import { AnnouncementPlaceholder } from "@/components/home/StorefrontEmptyState";
 
 interface TopHeaderBarProps {
   serverAnnouncementBars?: AnnouncementBar[];
 }
 
-// Default fallback
-const DEFAULT_BARS: AnnouncementBar[] = [
-  {
-    id: 0,
-    left_text: "🚚 Free Shipping on Orders Over ৳99",
-    center_text: "Summer Sale is Live! Up to 50% OFF 🔥",
-    right_text: "📞 Support: (800) 123-4567",
-    background_color: "#0F1115",
-    text_color: "#ffffff",
-    sort_order: 0,
-    status: "active",
-  },
-];
-
 export default function TopHeaderBar({ serverAnnouncementBars }: TopHeaderBarProps) {
 
-  const bars =
-    serverAnnouncementBars && serverAnnouncementBars.length > 0
-      ? serverAnnouncementBars
-      : DEFAULT_BARS;
+  const bars = serverAnnouncementBars ?? [];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -40,6 +24,8 @@ export default function TopHeaderBar({ serverAnnouncementBars }: TopHeaderBarPro
 
     return () => clearInterval(interval);
   }, [bars.length]);
+
+  if (bars.length === 0) return <AnnouncementPlaceholder />;
 
   const currentBar = bars[currentIndex] || bars[0];
 

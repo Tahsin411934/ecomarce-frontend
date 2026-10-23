@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { type CtaSection as CtaSectionType } from "@/services/home.service";
+import { CtaPlaceholder } from "./StorefrontEmptyState";
 
 interface CtaSectionProps {
   cta: CtaSectionType;
@@ -69,6 +70,11 @@ function hasMargin(
 }
 
 export default function CtaSection({ cta }: CtaSectionProps) {
+  if (![cta.title, cta.subtitle, cta.description, cta.image, cta.banner_image, cta.badge_text,
+    cta.feature_text_1, cta.feature_text_2, cta.feature_text_3, cta.button_text, cta.secondary_button_text].some(Boolean)) {
+    return <CtaPlaceholder />;
+  }
+
   const style = cta.cta_style || "style1";
 
   // ── Reusable button renderers ──

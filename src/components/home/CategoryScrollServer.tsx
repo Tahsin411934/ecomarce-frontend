@@ -15,7 +15,5 @@ export default async function CategoryScrollServer() {
     // API unavailable – render empty state
   }
 
-  if (categories.length === 0) return null;
-
   return <CategoryScroll categories={categories} />;
 }
