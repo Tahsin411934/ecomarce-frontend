@@ -5,6 +5,7 @@ import NavbarServer from "@/components/layout/NavbarServer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { settingsService } from "@/services/settings.service";
 import Footer from "@/components/layout/Footer";
+import ServiceBenefitsServer from "@/components/layout/ServiceBenefitsServer";
 import StoreProvider from "@/lib/StoreProvider";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ToastProvider from "@/components/ui/ToastProvider";
@@ -260,6 +261,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <main id="main-content" className="flex-1 pb-16 md:pb-0">
             {children}
           </main>
+          <ServiceBenefitsServer />
           <Footer />
           <MobileBottomNav />
           <CartDrawer />
