@@ -132,14 +132,14 @@ export default function NavigationBar({
 
         {/* Center: Nav Links - Hover dropdown */}
         {navItems.length === 0 && (
-          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-3">
-            <div className="flex gap-2" aria-hidden="true">
-              {Array.from({ length: 4 }, (_, index) => <span key={index} className="h-8 w-14 rounded-md border border-dashed border-gray-300 bg-gray-50 md:w-20" />)}
+          <div className="order-last flex w-full min-w-0 basis-full flex-col items-center justify-center gap-2 lg:order-none lg:w-auto lg:basis-auto lg:flex-1 lg:flex-row lg:flex-wrap lg:gap-3">
+            <div className="grid w-full min-w-0 grid-cols-4 gap-2 lg:flex lg:w-auto" aria-hidden="true">
+              {Array.from({ length: 4 }, (_, index) => <span key={index} className="h-8 min-w-0 rounded-md border border-dashed border-gray-300 bg-gray-50 lg:w-20" />)}
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500"><span>Please add navigation items.</span><DocumentationLink section="navigation" /></div>
+            <div className="flex max-w-full flex-col items-center gap-1 text-center text-xs text-gray-500 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3"><span className="break-words">Please add navigation items.</span><DocumentationLink section="navigation" /></div>
           </div>
         )}
-        <ul className="flex items-center gap-10">
+        <ul className={navItems.length > 0 ? "flex items-center gap-10" : "hidden"}>
           {navItems.map((item) => {
             const hasChildren = item.children && item.children.length > 0;
 
