@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ShoppingCart, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectCartItems, selectCartTotal, selectShippingTotal, clearCart } from "@/lib/features/cart/cartSlice";
@@ -12,7 +11,6 @@ import { trackBeginCheckout, trackPurchase } from "@/lib/gtm";
 
 export default function CheckoutPage() {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const items = useAppSelector(selectCartItems);
   const total = useAppSelector(selectCartTotal);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -25,6 +23,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [orderNumbers, setOrderNumbers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (success) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, [success]);
+
   // Guest-only field: a logged-out buyer must give their name so the order
   // has someone to deliver to (logged-in users come from their profile).
   const [customerName, setCustomerName] = useState("");
@@ -153,10 +158,6 @@ export default function CheckoutPage() {
           shipping: shippingCost,
         });
 
-        // Redirect to home after 3 seconds
-        setTimeout(() => {
-          router.push("/");
-        }, 3000);
       } else {
         setError(result.message || "Checkout failed. Please try again.");
       }
@@ -198,12 +199,11 @@ export default function CheckoutPage() {
           <p className="text-gray-500 mb-2">
             {orderNumbers.length > 1 ? "Your order numbers are:" : "Your order number is:"}
           </p>
-          <div className="space-y-2">
+          <div className="space-y-2 mb-8">
             {orderNumbers.map((number) => (
               <p key={number} className="text-lg font-bold text-[var(--color-primary)]">{number}</p>
             ))}
           </div>
-          <p className="text-sm text-gray-500 mt-4 mb-8">Redirecting to home page...</p>
           <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary)] transition-colors">
             Continue Shopping
           </Link>
